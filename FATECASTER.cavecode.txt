@@ -663,8 +663,8 @@ FateCaster
 
 CURRENT MILESTONE:
 
-Core product mechanics and immediate edge-case contracts ratified.
-Repository candidate must be reconciled before merge.
+Product definition complete.
+Current master map is in PR #1 for final review before merge.
 
 
 COMPLETED:
@@ -684,16 +684,23 @@ COMPLETED:
   v1 decision tree: natural-override display semantics, bounded history,
   and explicit intent for extreme TNs.
 - Those clarifications were resolved without expanding v1 scope.
+- The stale repository copy was replaced with the current
+  FC-001 through FC-009 master map.
+- Final review added the no-natural-override qualifier to FC-004.
+- Reference test vectors were added for the resolution contract.
 
 
 NEXT ACTION:
 
-Have this current map reviewed once more if desired.
+Complete final review of PR #1.
 
-Then replace the stale `FATECASTER.cavecode.txt` on the current feature branch
-with this current version and resume PR review.
+If the diff is clean:
 
-After the map is reconciled and merged, define:
+1. Mark the draft PR ready for review.
+2. Merge PR #1 into main.
+3. Delete the feature branch.
+
+Then define:
 
 1. Android UI framework / architecture
 2. application ID
@@ -723,6 +730,12 @@ They resolve:
 - what calculation/display means during a natural override
 - how much local roll history v1 retains
 - why the TN range intentionally extends to extreme difficulty
+
+Final review also:
+
+- added the no-natural-roll-override qualifier to FC-004
+- added reference test vectors for the resolution contract
+- replaced the stale repository copy with the current master map
 
 
 WHAT WAS DECIDED?
@@ -773,11 +786,14 @@ WHAT CURRENTLY WORKS?
 The resolution contract and bounded-history behavior are defined
 clearly enough for implementation without inventing these rules.
 
+The current master map now reflects the settled product contract.
+
 
 WHAT IS CURRENTLY BROKEN?
 
-The current GitHub PR candidate still contains an older stale version
-of this map and must be replaced before merge.
+No known product-contract issue is blocking implementation.
+
+PR #1 is undergoing final review before merge.
 
 
 WHAT REMAINS UNCERTAIN?
@@ -787,10 +803,11 @@ See BLOCK 20 — OPEN PRODUCT QUESTIONS.
 
 WHAT SHOULD HAPPEN NEXT?
 
-Optionally send this map through Council review once more.
+Complete final review of PR #1.
 
-Then replace the stale map in the feature branch with this current file
-and resume PR review.
+If clean, mark it ready for review and merge it into main.
+
+Then begin the Android baseline decisions recorded in BLOCK 20.
 
 
 WHAT IS THE NEXT HUMAN OR AI MOST LIKELY TO MISUNDERSTAND?
