@@ -5,7 +5,7 @@ CaveCode Reference Implementation 001
 ============================================================
 
 STATUS:
-Pre-build / product definition
+Product definition complete / pre-build
 
 PURPOSE OF THIS FILE:
 
@@ -204,6 +204,8 @@ TN 1 through 30
 
 RULE:
 
+When no natural-roll override applies:
+
 final roll value >= TN = SUCCESS
 final roll value <  TN = FAILURE
 
@@ -391,7 +393,7 @@ FateCaster v1 retains the most recent:
 100 casts
 
 When a new cast would exceed the limit,
-the oldest retained cast may be removed.
+the oldest retained cast is removed.
 
 The HISTORY screen includes a Clear History action.
 
@@ -621,6 +623,7 @@ Display must preserve both the math and the override result.
 
 FC-008
 Retain the most recent 100 casts.
+When a new cast would exceed the limit, the oldest retained cast is removed.
 HISTORY includes an intentional Clear History action.
 
 FC-009
@@ -664,7 +667,7 @@ FateCaster
 CURRENT MILESTONE:
 
 Product definition complete.
-Current master map is in PR #1 for final review before merge.
+Next milestone: Android baseline definition.
 
 
 COMPLETED:
@@ -692,15 +695,7 @@ COMPLETED:
 
 NEXT ACTION:
 
-Complete final review of PR #1.
-
-If the diff is clean:
-
-1. Mark the draft PR ready for review.
-2. Merge PR #1 into main.
-3. Delete the feature branch.
-
-Then define:
+Define the Android baseline:
 
 1. Android UI framework / architecture
 2. application ID
@@ -746,6 +741,7 @@ Natural 1/20 overrides the outcome tier, not the arithmetic record.
 
 FC-008:
 Retain the most recent 100 casts.
+When a new cast would exceed the limit, the oldest retained cast is removed.
 Provide an intentional Clear History action on HISTORY.
 
 FC-009:
@@ -786,14 +782,12 @@ WHAT CURRENTLY WORKS?
 The resolution contract and bounded-history behavior are defined
 clearly enough for implementation without inventing these rules.
 
-The current master map now reflects the settled product contract.
+The current master map reflects the settled product contract.
 
 
 WHAT IS CURRENTLY BROKEN?
 
 No known product-contract issue is blocking implementation.
-
-PR #1 is undergoing final review before merge.
 
 
 WHAT REMAINS UNCERTAIN?
@@ -803,11 +797,9 @@ See BLOCK 20 — OPEN PRODUCT QUESTIONS.
 
 WHAT SHOULD HAPPEN NEXT?
 
-Complete final review of PR #1.
+Begin the Android baseline decisions recorded in BLOCK 20.
 
-If clean, mark it ready for review and merge it into main.
-
-Then begin the Android baseline decisions recorded in BLOCK 20.
+Then map the CAST screen in detail.
 
 
 WHAT IS THE NEXT HUMAN OR AI MOST LIKELY TO MISUNDERSTAND?
@@ -826,7 +818,6 @@ but the modifier-adjusted final value is still calculated and recorded.
 Do not turn FateCaster into Broken Frontier.
 
 Broken Frontier integration comes later.
-
 
 ============================================================
 END — FATECASTER.cavecode.txt
