@@ -16,7 +16,7 @@ FateCaster is intended to be:
 - a small standalone Android application
 - a real Google Play Store release
 - a practical learning vehicle for Android release workflow
-- a standalone dice-resolution tool
+- a standalone d20 dice-resolution tool
 - the future dice-resolution companion/mechanism for Broken Frontier
 - CaveCode Reference Implementation 001
 
@@ -37,7 +37,7 @@ PRODUCT TYPE:
 Standalone Android application.
 
 PRIMARY PURPOSE:
-Cast dice, apply modifiers, compare against a target number,
+Cast a d20, apply a modifier, compare against a target number,
 show the degree of outcome, and preserve recent roll history.
 
 SECONDARY PURPOSE:
@@ -64,11 +64,13 @@ FateCaster v1 stays deliberately small.
 
 V1 INCLUDES:
 
-- multiple common dice
+- d20 rolling
 - numeric modifiers
 - target numbers
 - degree-of-success result
+- natural 1 / natural 20 overrides
 - roll history
+- two primary screens: CAST and HISTORY
 - standalone local operation
 - Android application packaging
 - Google Play Store release work
@@ -92,34 +94,53 @@ Do not expand v1 merely because an additional feature would be easy.
 🪨 BLOCK 3 — CORE ROLL INVARIANTS
 ============================================================
 
-1. A cast produces a randomized die result.
-2. The result shown must be the result actually produced.
-3. A cast result must never be silently changed after generation.
-4. Modifiers must be applied consistently.
-5. Target-number comparison must be deterministic once inputs are known.
-6. Future Broken Frontier invocation must use the same resolution rules.
-7. Core rolling must work without network access.
-8. Roll history must represent actual casts.
+1. A cast produces one randomized d20 result.
 
-The exact degree-of-success mathematics are NOT yet ratified.
+2. The result shown must be the result actually produced.
+
+3. A cast result must never be silently changed after generation.
+
+4. Modifiers must be applied consistently.
+
+5. The modifier-adjusted final value must always be calculated,
+   including on natural 1 and natural 20 rolls.
+
+6. Target-number comparison must be deterministic once inputs are known.
+
+7. Natural 20 always resolves as CRITICAL SUCCESS.
+
+8. Natural 1 always resolves as CRITICAL FAILURE.
+
+9. Natural overrides change the outcome tier, not the recorded roll math.
+
+10. Future Broken Frontier invocation must use the same resolution rules.
+
+11. Core rolling must work without network access.
+
+12. Roll history must represent actual casts.
 
 
 ============================================================
 🎮 BLOCK 4 — PRIMARY ROLL FLOW
 ============================================================
 
-Choose die
+Choose modifier
     ↓
-Choose or enter modifier
-    ↓
-Choose or enter target number
+Choose target number
     ↓
 Cast fate
     ↓
-Generate die result
+Generate d20 result
     ↓
-Apply modifier
+Calculate final value:
+raw d20 + modifier
     ↓
+Natural 20?
+    → CRITICAL SUCCESS
+    ↓ otherwise
+Natural 1?
+    → CRITICAL FAILURE
+    ↓ otherwise
 Compare final value to target number
     ↓
 Determine degree of outcome
@@ -133,101 +154,206 @@ Record cast in local history
 🎮 BLOCK 5 — DICE
 ============================================================
 
-V1 must support multiple common dice.
+DECISION FC-001 — V1 DICE
 
-EXACT V1 DICE SET:
-UNRESOLVED.
+FateCaster v1 uses one die:
 
-Do not invent or silently lock a dice list until explicitly decided.
+d20
+
+WHY:
+
+Broken Frontier currently uses d20 resolution.
+
+A single die keeps the first Android release deliberately small.
+
+Additional dice may be added later without changing the core concept.
 
 
 ============================================================
 🎮 BLOCK 6 — MODIFIERS
 ============================================================
 
-FateCaster supports numeric modifiers.
+DECISION FC-002 — MODIFIER RANGE
 
-CURRENT MODEL:
-raw die result + modifier = final roll value
+FateCaster v1 allows modifiers from:
+
+-10 through +10
+
+FORMULA:
+
+raw d20 result + modifier = final roll value
 
 Examples:
-12 + 2 = 14
-12 - 2 = 10
 
-Exact allowed modifier range is UNRESOLVED.
+13 + 2 = 15
+13 - 3 = 10
+
+The final roll value is calculated on every cast,
+including natural 1 and natural 20 casts.
 
 
 ============================================================
 🎮 BLOCK 7 — TARGET NUMBERS
 ============================================================
 
-FateCaster supports a target number.
+DECISION FC-003 — TARGET NUMBER
 
-The final roll value is compared against the target number
-to determine the outcome.
+FateCaster v1 uses:
 
-OPEN DETAILS:
+TN 1 through 30
 
-- exact target-number range
-- whether target number may be omitted for simple free rolls
-- whether presets are included in v1
+RULE:
+
+final roll value >= TN = SUCCESS
+final roll value <  TN = FAILURE
+
+PHRASE:
+
+Meet or beat.
+
+
+DECISION FC-009 — EXTREME TARGET NUMBERS
+
+The full TN 1 through 30 range is intentional.
+
+Upper target numbers represent extreme difficulty.
+
+Not every TN is expected to be readily attainable under every modifier.
+
+This is not an error condition and does not change the natural-roll
+override rules.
 
 
 ============================================================
 🎮 BLOCK 8 — DEGREE OF SUCCESS
 ============================================================
 
-FateCaster must report a degree-of-success result.
+DECISION FC-004 — DEGREE OF SUCCESS
 
-This is a required v1 feature.
+When no natural-roll override applies, FateCaster v1 uses
+four outcome levels based on final result relative to TN:
 
-The exact outcome bands and mathematics are NOT yet ratified.
+CRITICAL SUCCESS
+    final result is 10 or more above TN
 
-Possible categories may include:
+SUCCESS
+    final result meets or exceeds TN
+    but is less than 10 above TN
 
-- critical success
-- success
-- failure
-- critical failure
+FAILURE
+    final result is below TN
+    but misses by less than 10
 
-These labels are NOT locked merely by appearing here.
-
-RULE:
-Do not let an AI invent the degree system during coding.
+CRITICAL FAILURE
+    final result is 10 or more below TN
 
 
 ============================================================
-🌐 BLOCK 9 — CORE PLAYER-FACING LANGUAGE
+🎮 BLOCK 9 — NATURAL ROLL OVERRIDES
+============================================================
+
+DECISION FC-005 — NATURAL ROLL OVERRIDES
+
+Natural 20 = ALWAYS CRITICAL SUCCESS
+
+Natural 1 = ALWAYS CRITICAL FAILURE
+
+RESOLUTION PRECEDENCE:
+
+1. Generate the raw d20.
+2. Calculate the final value using the modifier.
+3. If raw d20 is 20, outcome = CRITICAL SUCCESS.
+4. If raw d20 is 1, outcome = CRITICAL FAILURE.
+5. Otherwise compare the final value to TN.
+6. Determine degree of success from distance to TN.
+
+Natural overrides take precedence over modifier/TN mathematics
+for the OUTCOME TIER.
+
+
+DECISION FC-007 — NATURAL OVERRIDE CALCULATION / DISPLAY CONTRACT
+
+A natural 1 or natural 20 does NOT erase the modifier calculation.
+
+Every cast preserves:
+
+- raw d20 result
+- modifier
+- calculated final value
+- target number
+- final outcome tier
+- whether a natural override occurred
+
+Example:
+
+raw d20: 20
+modifier: -5
+final value: 15
+TN: 20
+override: NATURAL 20
+outcome: CRITICAL SUCCESS
+
+The exact visual arrangement is still a UI decision,
+but the app must not hide or falsify either the roll math
+or the override outcome.
+
+REFERENCE TEST VECTORS:
+
+Raw 10 | Mod +0  | Final 10 | TN 10 → SUCCESS
+Raw 19 | Mod +1  | Final 20 | TN 10 → CRITICAL SUCCESS
+Raw 10 | Mod -1  | Final 9  | TN 10 → FAILURE
+Raw 10 | Mod -10 | Final 0  | TN 10 → CRITICAL FAILURE
+Raw 20 | Mod -5  | Final 15 | TN 20 → CRITICAL SUCCESS
+                                  NATURAL 20 OVERRIDE
+Raw 1  | Mod +10 | Final 11 | TN 5  → CRITICAL FAILURE
+                                  NATURAL 1 OVERRIDE
+
+============================================================
+🌐 BLOCK 10 — CORE PLAYER-FACING LANGUAGE
 ============================================================
 
 CURRENT APPROVED PHRASES:
 
 Before resolution:
+
     Awaiting your Fate…
 
 After resolution:
+
     Your Fate has been cast: [RESULT]
 
 Example:
+
     Your Fate has been cast: 15
 
 PRODUCT TONE:
+
 Direct.
 Ritual-like without becoming cumbersome.
 Readable at a glance.
 
+RESULT SEMANTICS:
+
+The final interface must communicate both:
+
+- what was rolled/calculated
+- what outcome FateCaster resolved
+
+For natural overrides, the interface must also make the
+natural 1 or natural 20 status visible.
+
+Exact typography and visual hierarchy remain unresolved.
+
 
 ============================================================
-🖍️ BLOCK 10 — HUMAN-EDITABLE PRESENTATION
+🖍️ BLOCK 11 — HUMAN-EDITABLE PRESENTATION
 ============================================================
 
 Potential safe presentation-level tuning may include:
 
-- default selected die
 - animation duration
 - sound enabled / disabled
 - haptics enabled / disabled
-- number of history entries retained
 - display wording
 
 The existence of a value here does not automatically put it in v1.
@@ -236,29 +362,46 @@ Do not let presentation settings alter the mathematical roll engine.
 
 
 ============================================================
-🎮 BLOCK 11 — LOCAL ROLL HISTORY
+🎮 BLOCK 12 — LOCAL ROLL HISTORY
 ============================================================
 
 FateCaster v1 includes local roll history.
 
-MINIMUM INTENDED RECORD:
+MINIMUM RECORD:
 
 - timestamp
-- die used
-- raw die result
+- raw d20 result
 - modifier
 - final roll value
 - target number
 - degree-of-success result
+- whether a natural 1 or natural 20 override occurred
 
 STORAGE PRINCIPLE:
+
 Local-first.
 
 No account or remote service is required to preserve history.
 
 
+DECISION FC-008 — HISTORY RETENTION
+
+FateCaster v1 retains the most recent:
+
+100 casts
+
+When a new cast would exceed the limit,
+the oldest retained cast may be removed.
+
+The HISTORY screen includes a Clear History action.
+
+Clear History must require an intentional user action.
+
+This does not create a third primary screen.
+
+
 ============================================================
-🪨 BLOCK 12 — LOCAL-FIRST / PRIVACY CONTRACT
+🪨 BLOCK 13 — LOCAL-FIRST / PRIVACY CONTRACT
 ============================================================
 
 FateCaster v1 must not require:
@@ -272,14 +415,67 @@ FateCaster v1 must not require:
 - unnecessary device permissions
 
 PERMISSION PRINCIPLE:
+
 Request no Android permission unless an implemented feature genuinely requires it.
 
 PRIVACY PRINCIPLE:
+
 Do not collect data merely because the platform makes collection easy.
 
 
 ============================================================
-🪨 BLOCK 13 — RELEASE CONTRACT
+🎮 BLOCK 14 — V1 SCREEN MODEL
+============================================================
+
+DECISION FC-006 — PRIMARY SCREENS
+
+FateCaster v1 uses two primary screens:
+
+1. CAST
+2. HISTORY
+
+
+CAST SCREEN:
+
+The main operational screen.
+
+Must contain:
+
+- d20 identity / presentation
+- modifier control
+- target number control
+- CAST FATE action
+- cast animation or waiting state
+- raw/final result information
+- degree-of-success display
+- visible natural 1 / natural 20 status when applicable
+
+
+HISTORY SCREEN:
+
+Displays previous casts.
+
+Each visible history item should provide enough information
+to understand the roll without opening a separate detail screen.
+
+The HISTORY screen also provides the Clear History action
+defined in FC-008.
+
+
+V1 DOES NOT REQUIRE:
+
+- account screen
+- profile screen
+- tutorial flow
+- dedicated settings screen
+
+If small settings such as sound or haptics are implemented,
+they may be exposed from the CAST screen without creating
+a third primary screen.
+
+
+============================================================
+🪨 BLOCK 15 — RELEASE CONTRACT
 ============================================================
 
 FateCaster is intended to become a real Google Play Store application.
@@ -301,15 +497,17 @@ Release-critical information must be preserved, including:
 - next release action
 
 RULE:
+
 Release signing material and secrets must NOT be committed
 into the public repository.
 
 GOAL:
+
 build → sign → bundle → upload → test → release → update
 
 
 ============================================================
-🔧 BLOCK 14 — BROKEN FRONTIER INTEGRATION
+🔧 BLOCK 16 — BROKEN FRONTIER INTEGRATION
 ============================================================
 
 Broken Frontier integration is FUTURE WORK.
@@ -326,15 +524,20 @@ OPEN QUESTIONS:
 - whether the standalone app ever receives external roll requests
 - how automatic FateCaster invocation maps to the Android app
 
+Future programmatic/headless resolution may use a different interface
+from the human CAST screen, but it must use the same authoritative
+resolution rules.
+
 Do not solve these during v1 unless v1 actually requires them.
 
 
 ============================================================
-🔧 BLOCK 15 — FUTURE FEATURES
+🔧 BLOCK 17 — FUTURE FEATURES
 ============================================================
 
 Possible later features:
 
+- additional dice types
 - saved roll presets
 - custom dice
 - expanded history tools
@@ -346,7 +549,7 @@ These are possibilities, not promises.
 
 
 ============================================================
-🪨 BLOCK 16 — CAVECODE TEST CONTRACT
+🪨 BLOCK 18 — CAVECODE TEST CONTRACT
 ============================================================
 
 FateCaster is being built under CaveCode from the beginning.
@@ -364,6 +567,7 @@ The test is whether the CaveCode structure remains useful through:
 9. later maintenance
 
 SUCCESS DOES NOT MEAN:
+
 "CaveCode built the app."
 
 A more accurate statement is:
@@ -383,122 +587,226 @@ Evidence should come from:
 
 
 ============================================================
-🔧 BLOCK 17 — OPEN PRODUCT QUESTIONS
+🪨 BLOCK 19 — SETTLED PRODUCT DECISIONS
+============================================================
+
+FC-001
+d20 only for FateCaster v1.
+
+FC-002
+Modifier range is -10 through +10.
+
+FC-003
+TN range is 1 through 30.
+Meet or beat succeeds.
+
+FC-004
+When no natural-roll override applies, FateCaster v1 uses
+four outcome levels based on final result relative to TN:
+Critical Success / Success / Failure / Critical Failure.
+Critical threshold is 10 points from TN.
+
+FC-005
+Natural 20 always Critical Success.
+Natural 1 always Critical Failure.
+
+FC-006
+Two primary screens:
+CAST and HISTORY.
+
+FC-007
+Modifier-adjusted final value is always calculated and preserved.
+Natural 1 / natural 20 override the outcome tier only.
+Display must preserve both the math and the override result.
+
+FC-008
+Retain the most recent 100 casts.
+HISTORY includes an intentional Clear History action.
+
+FC-009
+TN 1 through 30 is intentional.
+Upper TNs represent extreme difficulty and need not be
+readily attainable under every modifier.
+
+
+============================================================
+🔧 BLOCK 20 — OPEN PRODUCT QUESTIONS
 ============================================================
 
 NOT YET SETTLED:
 
-- exact v1 dice set
-- exact modifier range
-- exact target-number behavior and range
-- exact degree-of-success mathematics
-- final degree labels
-- exact v1 screen layout
 - exact Android UI framework / project architecture
 - application ID
 - minimum SDK
 - target SDK
 - versioning starting point
 - release signing workflow
-- roll-history retention limit
-- exact v1 settings
+- exact v1 optional settings
 - final Play Store title / short description / full description
 - icon and visual identity
-- repository name, if a FateCaster repository does not already exist
+- exact CAST screen visual layout
+- exact HISTORY screen visual layout
 
 RULE:
+
 Do not convert an open question into implementation truth
 without explicitly recording the decision.
 
 
 ============================================================
-🖍️ BLOCK 18 — CURRENT WORK / RESUME HERE
+🖍️ BLOCK 21 — CURRENT WORK / RESUME HERE
 ============================================================
 
 CURRENT PROJECT:
+
 FateCaster
 
 CURRENT MILESTONE:
-Product definition before implementation.
+
+Core product mechanics and immediate edge-case contracts ratified.
+Repository candidate must be reconciled before merge.
+
 
 COMPLETED:
 
 - FateCaster selected as CaveCode Reference Implementation 001.
 - Standalone Android app confirmed as the target.
 - Google Play Store release confirmed as a project goal.
-- V1 deliberately constrained to a small dice-resolution application.
+- V1 deliberately constrained to a small d20-resolution application.
+- FC-001 through FC-009 ratified.
 - Local-first / no-account / no-backend / no-AI direction established.
-- Core cast flow mapped.
 - Broken Frontier integration explicitly deferred.
 - Release lifecycle recognized as part of the artifact.
-- First FateCaster CaveCode master map drafted.
+- FateCaster GitHub repository created.
+- Feature branch and PR #1 created for the master map.
+- Human review caught that the PR contained an older stale map.
+- Council review identified three clarifications inside the existing
+  v1 decision tree: natural-override display semantics, bounded history,
+  and explicit intent for extreme TNs.
+- Those clarifications were resolved without expanding v1 scope.
+
 
 NEXT ACTION:
 
-Resolve only the product decisions required before creating
-the Android project:
+Have this current map reviewed once more if desired.
 
-1. exact v1 dice set
-2. modifier behavior / range
-3. target-number behavior
-4. degree-of-success mathematics
-5. minimum screen set / interaction flow
+Then replace the stale `FATECASTER.cavecode.txt` on the current feature branch
+with this current version and resume PR review.
 
-Then define the Android project skeleton.
+After the map is reconciled and merged, define:
+
+1. Android UI framework / architecture
+2. application ID
+3. minimum SDK
+4. target SDK
+5. initial versionCode / versionName
+
+Then map the CAST screen in detail.
 
 
 ============================================================
-🖍️ BLOCK 19 — HANDOFF SNAPSHOT
+🖍️ BLOCK 22 — HANDOFF SNAPSHOT
 ============================================================
 
 DATE:
-2026-08-14
+
+2026-08-15
+
 
 WHAT CHANGED?
 
-FateCaster has moved from an idea attached to Broken Frontier
-into a separately mapped standalone Android product.
+FC-007 through FC-009 were added as refinements to the already
+ratified FateCaster v1 decision tree.
+
+They resolve:
+
+- what calculation/display means during a natural override
+- how much local roll history v1 retains
+- why the TN range intentionally extends to extreme difficulty
+
 
 WHAT WAS DECIDED?
 
-FateCaster will be the first complete application developed
-under the stabilized CaveCode approach.
+FC-007:
+Always calculate and preserve raw roll, modifier, and final value.
+Natural 1/20 overrides the outcome tier, not the arithmetic record.
 
-It will remain small, local-first, and release-oriented.
+FC-008:
+Retain the most recent 100 casts.
+Provide an intentional Clear History action on HISTORY.
+
+FC-009:
+TN 1–30 remains intentional.
+Upper TNs represent extreme difficulty.
+
 
 WHY?
 
-A small real application provides a cleaner test of CaveCode
-than beginning with the much larger Broken Frontier system.
+These decisions close ambiguity that would otherwise have to be
+invented during implementation.
 
-It also serves the practical goal of learning the complete
-Google Play Store release and update process.
+They do not expand the product beyond the existing goals.
+
+
+SCOPE CHECK:
+
+Still d20 only.
+
+Still two primary screens.
+
+Still local-first.
+
+Still no account.
+
+Still no backend.
+
+Still no AI requirement.
+
+Still no Broken Frontier dependency.
+
+Still aimed at learning the Android / Google Play release lifecycle
+while testing CaveCode on a complete, deliberately small application.
+
 
 WHAT CURRENTLY WORKS?
 
-Product scope is clear enough to begin resolving mechanics.
+The resolution contract and bounded-history behavior are defined
+clearly enough for implementation without inventing these rules.
+
 
 WHAT IS CURRENTLY BROKEN?
 
-Nothing has been implemented yet.
+The current GitHub PR candidate still contains an older stale version
+of this map and must be replaced before merge.
+
 
 WHAT REMAINS UNCERTAIN?
 
-See BLOCK 17 — OPEN PRODUCT QUESTIONS.
+See BLOCK 20 — OPEN PRODUCT QUESTIONS.
+
 
 WHAT SHOULD HAPPEN NEXT?
 
-Ratify the core dice-resolution rules before writing the Android engine.
+Optionally send this map through Council review once more.
+
+Then replace the stale map in the feature branch with this current file
+and resume PR review.
+
 
 WHAT IS THE NEXT HUMAN OR AI MOST LIKELY TO MISUNDERSTAND?
 
-FateCaster v1 is intentionally small.
+FC-007 through FC-009 are refinements, not new product scope.
 
-Do not turn it into Broken Frontier.
+Do not add more dice to v1.
 
-Do not add a backend, AI, accounts, or unnecessary permissions.
+Do not add more primary screens to v1.
 
-Do not invent unresolved roll mathematics during implementation.
+Do not alter the critical threshold without a new decision.
+
+Natural 1 and natural 20 override outcome tier,
+but the modifier-adjusted final value is still calculated and recorded.
+
+Do not turn FateCaster into Broken Frontier.
 
 Broken Frontier integration comes later.
 
