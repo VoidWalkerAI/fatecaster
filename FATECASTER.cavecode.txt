@@ -1,0 +1,508 @@
+============================================================
+FATECASTER.cavecode.txt
+FateCaster — Master Project Map
+CaveCode Reference Implementation 001
+============================================================
+
+STATUS:
+Pre-build / product definition
+
+PURPOSE OF THIS FILE:
+
+This is the read-first project map for FateCaster.
+
+FateCaster is intended to be:
+
+- a small standalone Android application
+- a real Google Play Store release
+- a practical learning vehicle for Android release workflow
+- a standalone dice-resolution tool
+- the future dice-resolution companion/mechanism for Broken Frontier
+- CaveCode Reference Implementation 001
+
+This file records current truth, settled scope, unresolved questions,
+release constraints, and the exact point where work should resume.
+
+A human or AI returning to FateCaster cold should read this file first.
+
+
+============================================================
+🪨 BLOCK 1 — PRODUCT IDENTITY
+============================================================
+
+NAME:
+FateCaster
+
+PRODUCT TYPE:
+Standalone Android application.
+
+PRIMARY PURPOSE:
+Cast dice, apply modifiers, compare against a target number,
+show the degree of outcome, and preserve recent roll history.
+
+SECONDARY PURPOSE:
+Provide a small, real application that can be taken through
+the complete Android and Google Play Store release lifecycle.
+
+BROKEN FRONTIER RELATIONSHIP:
+FateCaster is related to Broken Frontier but must remain
+usable as a standalone application.
+
+Broken Frontier integration is future work.
+
+FateCaster v1 must not require Broken Frontier to function.
+
+CAVECODE ROLE:
+FateCaster is CaveCode Reference Implementation 001.
+
+
+============================================================
+🪨 BLOCK 2 — V1 SCOPE CONTRACT
+============================================================
+
+FateCaster v1 stays deliberately small.
+
+V1 INCLUDES:
+
+- multiple common dice
+- numeric modifiers
+- target numbers
+- degree-of-success result
+- roll history
+- standalone local operation
+- Android application packaging
+- Google Play Store release work
+
+V1 DOES NOT REQUIRE:
+
+- user accounts
+- backend services
+- cloud synchronization
+- AI
+- unnecessary permissions
+- Broken Frontier connectivity
+- multiplayer
+- social features
+
+RULE:
+Do not expand v1 merely because an additional feature would be easy.
+
+
+============================================================
+🪨 BLOCK 3 — CORE ROLL INVARIANTS
+============================================================
+
+1. A cast produces a randomized die result.
+2. The result shown must be the result actually produced.
+3. A cast result must never be silently changed after generation.
+4. Modifiers must be applied consistently.
+5. Target-number comparison must be deterministic once inputs are known.
+6. Future Broken Frontier invocation must use the same resolution rules.
+7. Core rolling must work without network access.
+8. Roll history must represent actual casts.
+
+The exact degree-of-success mathematics are NOT yet ratified.
+
+
+============================================================
+🎮 BLOCK 4 — PRIMARY ROLL FLOW
+============================================================
+
+Choose die
+    ↓
+Choose or enter modifier
+    ↓
+Choose or enter target number
+    ↓
+Cast fate
+    ↓
+Generate die result
+    ↓
+Apply modifier
+    ↓
+Compare final value to target number
+    ↓
+Determine degree of outcome
+    ↓
+Display result
+    ↓
+Record cast in local history
+
+
+============================================================
+🎮 BLOCK 5 — DICE
+============================================================
+
+V1 must support multiple common dice.
+
+EXACT V1 DICE SET:
+UNRESOLVED.
+
+Do not invent or silently lock a dice list until explicitly decided.
+
+
+============================================================
+🎮 BLOCK 6 — MODIFIERS
+============================================================
+
+FateCaster supports numeric modifiers.
+
+CURRENT MODEL:
+raw die result + modifier = final roll value
+
+Examples:
+12 + 2 = 14
+12 - 2 = 10
+
+Exact allowed modifier range is UNRESOLVED.
+
+
+============================================================
+🎮 BLOCK 7 — TARGET NUMBERS
+============================================================
+
+FateCaster supports a target number.
+
+The final roll value is compared against the target number
+to determine the outcome.
+
+OPEN DETAILS:
+
+- exact target-number range
+- whether target number may be omitted for simple free rolls
+- whether presets are included in v1
+
+
+============================================================
+🎮 BLOCK 8 — DEGREE OF SUCCESS
+============================================================
+
+FateCaster must report a degree-of-success result.
+
+This is a required v1 feature.
+
+The exact outcome bands and mathematics are NOT yet ratified.
+
+Possible categories may include:
+
+- critical success
+- success
+- failure
+- critical failure
+
+These labels are NOT locked merely by appearing here.
+
+RULE:
+Do not let an AI invent the degree system during coding.
+
+
+============================================================
+🌐 BLOCK 9 — CORE PLAYER-FACING LANGUAGE
+============================================================
+
+CURRENT APPROVED PHRASES:
+
+Before resolution:
+    Awaiting your Fate…
+
+After resolution:
+    Your Fate has been cast: [RESULT]
+
+Example:
+    Your Fate has been cast: 15
+
+PRODUCT TONE:
+Direct.
+Ritual-like without becoming cumbersome.
+Readable at a glance.
+
+
+============================================================
+🖍️ BLOCK 10 — HUMAN-EDITABLE PRESENTATION
+============================================================
+
+Potential safe presentation-level tuning may include:
+
+- default selected die
+- animation duration
+- sound enabled / disabled
+- haptics enabled / disabled
+- number of history entries retained
+- display wording
+
+The existence of a value here does not automatically put it in v1.
+
+Do not let presentation settings alter the mathematical roll engine.
+
+
+============================================================
+🎮 BLOCK 11 — LOCAL ROLL HISTORY
+============================================================
+
+FateCaster v1 includes local roll history.
+
+MINIMUM INTENDED RECORD:
+
+- timestamp
+- die used
+- raw die result
+- modifier
+- final roll value
+- target number
+- degree-of-success result
+
+STORAGE PRINCIPLE:
+Local-first.
+
+No account or remote service is required to preserve history.
+
+
+============================================================
+🪨 BLOCK 12 — LOCAL-FIRST / PRIVACY CONTRACT
+============================================================
+
+FateCaster v1 must not require:
+
+- account creation
+- login
+- cloud database
+- remote API
+- AI service
+- network access for core rolling
+- unnecessary device permissions
+
+PERMISSION PRINCIPLE:
+Request no Android permission unless an implemented feature genuinely requires it.
+
+PRIVACY PRINCIPLE:
+Do not collect data merely because the platform makes collection easy.
+
+
+============================================================
+🪨 BLOCK 13 — RELEASE CONTRACT
+============================================================
+
+FateCaster is intended to become a real Google Play Store application.
+
+Release-critical information must be preserved, including:
+
+- application ID
+- versionCode
+- versionName
+- minimum Android SDK
+- target Android SDK
+- signing arrangement
+- release build type
+- Android App Bundle status
+- Play Console testing track
+- store listing status
+- privacy / data-safety declarations
+- last successful release build
+- next release action
+
+RULE:
+Release signing material and secrets must NOT be committed
+into the public repository.
+
+GOAL:
+build → sign → bundle → upload → test → release → update
+
+
+============================================================
+🔧 BLOCK 14 — BROKEN FRONTIER INTEGRATION
+============================================================
+
+Broken Frontier integration is FUTURE WORK.
+
+It is not required for FateCaster v1.
+
+The standalone application must not depend on Broken Frontier.
+
+OPEN QUESTIONS:
+
+- library versus shared module versus service boundary
+- invocation contract
+- result payload
+- whether the standalone app ever receives external roll requests
+- how automatic FateCaster invocation maps to the Android app
+
+Do not solve these during v1 unless v1 actually requires them.
+
+
+============================================================
+🔧 BLOCK 15 — FUTURE FEATURES
+============================================================
+
+Possible later features:
+
+- saved roll presets
+- custom dice
+- expanded history tools
+- share / export
+- accessibility improvements
+- Broken Frontier integration
+
+These are possibilities, not promises.
+
+
+============================================================
+🪨 BLOCK 16 — CAVECODE TEST CONTRACT
+============================================================
+
+FateCaster is being built under CaveCode from the beginning.
+
+The test is whether the CaveCode structure remains useful through:
+
+1. design
+2. implementation
+3. revision
+4. testing
+5. interruption
+6. resumption
+7. Android packaging
+8. Play Store release
+9. later maintenance
+
+SUCCESS DOES NOT MEAN:
+"CaveCode built the app."
+
+A more accurate statement is:
+
+FateCaster was designed, documented, built, reviewed, handed off,
+released, and maintained using CaveCode as its human/AI project protocol.
+
+Evidence should come from:
+
+- this map
+- local subsystem CaveCode maps when needed
+- Git commits
+- pull requests
+- build results
+- release artifacts
+- later ability to resume and modify the project without lost context
+
+
+============================================================
+🔧 BLOCK 17 — OPEN PRODUCT QUESTIONS
+============================================================
+
+NOT YET SETTLED:
+
+- exact v1 dice set
+- exact modifier range
+- exact target-number behavior and range
+- exact degree-of-success mathematics
+- final degree labels
+- exact v1 screen layout
+- exact Android UI framework / project architecture
+- application ID
+- minimum SDK
+- target SDK
+- versioning starting point
+- release signing workflow
+- roll-history retention limit
+- exact v1 settings
+- final Play Store title / short description / full description
+- icon and visual identity
+- repository name, if a FateCaster repository does not already exist
+
+RULE:
+Do not convert an open question into implementation truth
+without explicitly recording the decision.
+
+
+============================================================
+🖍️ BLOCK 18 — CURRENT WORK / RESUME HERE
+============================================================
+
+CURRENT PROJECT:
+FateCaster
+
+CURRENT MILESTONE:
+Product definition before implementation.
+
+COMPLETED:
+
+- FateCaster selected as CaveCode Reference Implementation 001.
+- Standalone Android app confirmed as the target.
+- Google Play Store release confirmed as a project goal.
+- V1 deliberately constrained to a small dice-resolution application.
+- Local-first / no-account / no-backend / no-AI direction established.
+- Core cast flow mapped.
+- Broken Frontier integration explicitly deferred.
+- Release lifecycle recognized as part of the artifact.
+- First FateCaster CaveCode master map drafted.
+
+NEXT ACTION:
+
+Resolve only the product decisions required before creating
+the Android project:
+
+1. exact v1 dice set
+2. modifier behavior / range
+3. target-number behavior
+4. degree-of-success mathematics
+5. minimum screen set / interaction flow
+
+Then define the Android project skeleton.
+
+
+============================================================
+🖍️ BLOCK 19 — HANDOFF SNAPSHOT
+============================================================
+
+DATE:
+2026-08-14
+
+WHAT CHANGED?
+
+FateCaster has moved from an idea attached to Broken Frontier
+into a separately mapped standalone Android product.
+
+WHAT WAS DECIDED?
+
+FateCaster will be the first complete application developed
+under the stabilized CaveCode approach.
+
+It will remain small, local-first, and release-oriented.
+
+WHY?
+
+A small real application provides a cleaner test of CaveCode
+than beginning with the much larger Broken Frontier system.
+
+It also serves the practical goal of learning the complete
+Google Play Store release and update process.
+
+WHAT CURRENTLY WORKS?
+
+Product scope is clear enough to begin resolving mechanics.
+
+WHAT IS CURRENTLY BROKEN?
+
+Nothing has been implemented yet.
+
+WHAT REMAINS UNCERTAIN?
+
+See BLOCK 17 — OPEN PRODUCT QUESTIONS.
+
+WHAT SHOULD HAPPEN NEXT?
+
+Ratify the core dice-resolution rules before writing the Android engine.
+
+WHAT IS THE NEXT HUMAN OR AI MOST LIKELY TO MISUNDERSTAND?
+
+FateCaster v1 is intentionally small.
+
+Do not turn it into Broken Frontier.
+
+Do not add a backend, AI, accounts, or unnecessary permissions.
+
+Do not invent unresolved roll mathematics during implementation.
+
+Broken Frontier integration comes later.
+
+
+============================================================
+END — FATECASTER.cavecode.txt
+============================================================
