@@ -5,7 +5,7 @@ CaveCode Reference Implementation 001
 ============================================================
 
 STATUS:
-Pre-build — Android baseline and primary screen contracts complete
+Implementation-ready — pre-build readiness review passed
 
 PURPOSE OF THIS FILE:
 
@@ -1291,31 +1291,54 @@ FC-016 is authoritative.
 
 CURRENT MILESTONE:
 
-Pre-build readiness review.
+Android implementation.
+
+
+PRE-BUILD READINESS REVIEW:
+
+PASS
+
+
+REVIEW RESULT:
+
+1. FC-001 through FC-009 fully define resolution behavior.
+
+2. FC-010 through FC-014 define the Android baseline.
+
+3. FC-015 defines CAST behavior.
+
+4. FC-016 defines HISTORY behavior.
+
+5. No unresolved item in BLOCK 20 requires the builder
+   to invent product behavior before implementation can begin.
 
 
 NEXT ACTION:
 
-Review the complete FateCaster v1 contract
-and determine whether any unresolved item in BLOCK 20
-must be settled before Android implementation begins.
+Begin Android implementation.
 
-Do not resolve presentation details merely for completeness.
+Build in this order:
 
-Only settle an open question before implementation
-if implementation genuinely requires that decision.
+1. Android project skeleton
+2. pure Kotlin roll resolver
+3. resolver tests using the reference test vectors
+4. local history model / storage
+5. CAST screen
+6. HISTORY screen
+7. integration of CAST → resolver → history
+8. first complete local app test
 
 
-IMPLEMENTATION GATE:
+IMPLEMENTATION RULE:
 
-Before beginning Android implementation, confirm that:
+Implement the settled contract before adding presentation polish.
 
-1. FC-001 through FC-009 fully define resolution behavior.
-2. FC-010 through FC-014 fully define the Android baseline.
-3. FC-015 fully defines CAST behavior.
-4. FC-016 fully defines HISTORY behavior.
-5. No unresolved question requires the builder to invent
-   product behavior.
+Do not stop implementation merely to settle an open presentation
+or release question unless that question becomes a concrete blocker.
+
+Do not alter settled product behavior during implementation
+without first recording the reason and deliberately reopening
+the affected decision.
 
 
 RESUME RULE:
@@ -1338,11 +1361,15 @@ DATE:
 
 CHECKPOINT:
 
+Pre-build readiness review passed.
+
 Android baseline complete.
 CAST screen contract complete.
 HISTORY screen contract complete.
 
-FateCaster is ready for a pre-build readiness review.
+No unresolved product question prevents implementation.
+
+FateCaster is ready for Android implementation.
 
 
 WHAT CHANGED IN THIS WORK SESSION?
@@ -1422,22 +1449,16 @@ See BLOCK 20 — OPEN PRODUCT QUESTIONS.
 
 WHAT SHOULD HAPPEN NEXT?
 
-Perform one pre-build readiness review.
+Begin Android implementation.
 
-Ask:
+First implementation milestone:
 
-Does anything still unresolved prevent us from beginning
-the Android implementation correctly?
+Create the Android project skeleton and pure Kotlin
+authoritative roll resolver.
 
-If no:
-
-begin Android implementation.
-
-If yes:
-
-settle only the blocking issue,
-checkpoint it,
-then begin implementation.
+Use the existing reference test vectors to prove that
+the resolver implements FC-001 through FC-009 correctly
+before connecting it to Compose UI.
 
 
 WHAT IS THE NEXT HUMAN OR AI MOST LIKELY TO MISUNDERSTAND?
