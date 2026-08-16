@@ -764,6 +764,7 @@ CURRENT MILESTONE:
 FC-010 — Android foundation is settled.
 FC-011 — application ID is settled.
 FC-012 — minimum SDK is settled.
+FC-013 — target SDK is settled.
 
 Application ID / namespace:
 ai.voidwalker.fatecaster
