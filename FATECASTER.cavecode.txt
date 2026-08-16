@@ -5,7 +5,7 @@ CaveCode Reference Implementation 001
 ============================================================
 
 STATUS:
-Implementation-ready — pre-build readiness review passed
+Implementation in progress — Milestone 1 complete
 
 PURPOSE OF THIS FILE:
 
@@ -1299,42 +1299,42 @@ FC-016 is authoritative.
 
 CURRENT MILESTONE:
 
-Android implementation.
+Milestone 2 — Local history model / storage.
 
 
-PRE-BUILD READINESS REVIEW:
+IMPLEMENTATION PROGRESS:
 
-PASS
+MILESTONE 1 — COMPLETE
 
+Completed:
 
-REVIEW RESULT:
+- Android project skeleton
+- Gradle / Android build configuration
+- Android manifest
+- MainActivity
+- RollResult model
+- authoritative pure Kotlin RollResolver
+- six FC-001 through FC-009 reference tests
+- GitHub Actions Android CI
+- successful testDebugUnitTest
+- successful assembleDebug
 
-1. FC-001 through FC-009 fully define resolution behavior.
+PROVEN:
 
-2. FC-010 through FC-014 define the Android baseline.
+The authoritative resolution engine compiles.
 
-3. FC-015 defines CAST behavior.
+All six CaveCode reference vectors pass.
 
-4. FC-016 defines HISTORY behavior.
-
-5. No unresolved item in BLOCK 20 requires the builder
-   to invent product behavior before implementation can begin.
+A FateCaster debug APK can be assembled successfully by CI.
 
 
 NEXT ACTION:
 
-Begin Android implementation.
+Begin Milestone 2.
 
-Build in this order:
-
-1. Android project skeleton
-2. pure Kotlin roll resolver
-3. resolver tests using the reference test vectors
-4. local history model / storage
-5. CAST screen
-6. HISTORY screen
-7. integration of CAST → resolver → history
-8. first complete local app test
+Create the persistent cast-history model,
+then implement local history storage that obeys
+FC-008 and FC-016.
 
 
 IMPLEMENTATION RULE:
@@ -1390,6 +1390,22 @@ HISTORY screen contract complete.
 No unresolved product question prevents implementation.
 
 FateCaster is ready for Android implementation.
+
+IMPLEMENTATION CHECKPOINT:
+
+Milestone 1 complete.
+
+GitHub Actions successfully passed:
+
+:app:testDebugUnitTest
+:app:assembleDebug
+
+The Android skeleton and authoritative RollResolver are now
+implemented and proven by automated tests.
+
+NEXT:
+
+Milestone 2 — local history model / storage.
 
 
 WHAT CHANGED IN THIS WORK SESSION?
