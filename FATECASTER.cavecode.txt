@@ -730,6 +730,34 @@ level at release time.
 Future target SDK changes are release-maintenance work and should
 be recorded in CaveCode before implementation.
 
+DECISION FC-014 — INITIAL VERSION
+
+versionCode:
+1
+
+versionName:
+0.1.0
+
+WHY:
+
+versionCode 1 is FateCaster's first Android build identity.
+
+versionName 0.1.0 identifies FateCaster as an early
+pre-release implementation build.
+
+The first production-ready Google Play release may advance
+versionName to 1.0.0 when the v1 product contract is actually satisfied.
+
+RULE:
+
+versionCode must increase for every subsequent build uploaded
+to Google Play.
+
+Never reuse a versionCode that has already been uploaded.
+
+versionName communicates the meaningful product release version
+and does not need to numerically match versionCode.
+
 
 ============================================================
 🔧 BLOCK 20 — OPEN PRODUCT QUESTIONS
@@ -737,7 +765,6 @@ be recorded in CaveCode before implementation.
 
 NOT YET SETTLED:
 
-- versioning starting point
 - release signing workflow
 - exact v1 optional settings
 - final Play Store title / short description / full description
@@ -765,6 +792,7 @@ FC-010 — Android foundation is settled.
 FC-011 — application ID is settled.
 FC-012 — minimum SDK is settled.
 FC-013 — target SDK is settled.
+FC-014 — initial version is settled.
 
 Application ID / namespace:
 ai.voidwalker.fatecaster
@@ -775,9 +803,16 @@ API 23 — Android 6.0 Marshmallow
 Target SDK:
 API 36 — Android 16
 
-Next decision:
+Initial version:
+versionCode 1
+versionName 0.1.0
 
-FC-014 — initial versionCode / versionName
+ANDROID BASELINE:
+Complete.
+
+Next milestone:
+
+Map the CAST screen in detail.
 
 COMPLETED:
 
@@ -803,11 +838,11 @@ COMPLETED:
 
 NEXT ACTION:
 
-Decide FC-014 — initial versionCode / versionName.
+Define the CAST screen contract and layout.
 
-After FC-014:
-
-Map the CAST screen in detail.
+Do not begin Android implementation until the CAST screen
+has been mapped clearly enough that implementation does not
+have to invent product behavior.
 
 ============================================================
 🖍️ BLOCK 22 — HANDOFF SNAPSHOT
@@ -827,6 +862,7 @@ FC-010 — Android foundation was ratified.
 FC-011 — application ID was ratified.
 FC-012 — minimum SDK was ratified.
 FC-013 — target SDK was ratified.
+FC-014 — initial version was ratified.
 
 
 WHAT WAS DECIDED?
@@ -893,6 +929,19 @@ to be advanced.
 Future target SDK changes are release-maintenance decisions and
 must be recorded before implementation.
 
+FC-014:
+
+versionCode:
+1
+
+versionName:
+0.1.0
+
+FateCaster begins as a pre-release 0.1.0 build.
+
+versionCode must increase for subsequent Google Play uploads
+and must never be reused after upload.
+
 
 WHY?
 
@@ -947,9 +996,7 @@ See BLOCK 20 — OPEN PRODUCT QUESTIONS.
 
 WHAT SHOULD HAPPEN NEXT?
 
-Decide:
-
-FC-014 — initial versionCode / versionName
+Map the CAST screen in detail.
 
 
 WHAT IS THE NEXT HUMAN OR AI MOST LIKELY TO MISUNDERSTAND?
