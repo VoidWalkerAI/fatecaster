@@ -758,24 +758,295 @@ Never reuse a versionCode that has already been uploaded.
 versionName communicates the meaningful product release version
 and does not need to numerically match versionCode.
 
+DECISION FC-015 — CAST SCREEN CONTRACT
+
+PRIMARY LAYOUT:
+
+FateCaster uses a single-column CAST screen with:
+
+- FateCaster identity/header
+- large faceted d20 / raw-result area
+- Modifier stepper
+- Target TN stepper
+- large full-width CAST FATE action
+- completed-result area
+- persistent CAST / HISTORY bottom navigation
+
+The main content may scroll on short screens.
+
+FateCaster does not force portrait orientation.
+
+
+INPUT CONTROLS:
+
+Modifier:
+- tap stepper only
+- range -10 through +10
+- one tap changes value by one
+- no slider
+- no keyboard entry
+- no wraparound
+
+Target TN:
+- tap stepper only
+- range 1 through 30
+- one tap changes value by one
+- no slider
+- no keyboard entry
+- no wraparound
+
+At a range boundary, the unavailable direction is disabled.
+
+
+DEFAULT CAST STATE:
+
+Fresh launch:
+
+Modifier:
++0
+
+Target TN:
+10
+
+Result:
+None
+
+The d20 area shows a neutral placeholder.
+No fabricated roll is displayed.
+
+
+D20 PRESENTATION:
+
+The dominant visual element is a recognizable faceted d20.
+
+The number shown inside the d20 is always the RAW d20 result.
+
+The modifier-adjusted final value is shown separately.
+
+During casting, the d20 may tumble / rotate / scale as presentation.
+
+Do not display fake intermediate roll numbers.
+
+
+CAST ACTION:
+
+The user sets Modifier and TN and taps CAST FATE once.
+
+No confirmation or separate calculation action is required.
+
+A cast is atomic.
+
+At CAST FATE tap:
+
+- capture Modifier
+- capture TN
+- begin CASTING state
+- freeze cast inputs
+- disable CAST FATE
+- temporarily disable navigation
+- generate exactly one authoritative raw d20 result
+- resolve that result using FC-001 through FC-009
+- write exactly one history record
+- display the completed result
+- re-enable controls
+
+
+CAST SCREEN STATES:
+
+1. READY
+
+- neutral d20 placeholder
+- Modifier/TN controls active
+- CAST FATE active
+- no fabricated result
+
+2. CASTING
+
+- captured inputs cannot change
+- "Awaiting your Fate…" is displayed
+- d20 presentation animation runs
+- one authoritative raw d20 is generated
+- no fake intermediate rolls
+
+3. RESULT
+
+- large d20 shows raw roll
+- "Your Fate has been cast: [FINAL]"
+- explicit outcome tier is displayed
+- NATURAL 1 / NATURAL 20 is displayed when applicable
+- raw / modifier / final math is displayed
+- TN used for that cast is displayed
+- exactly one history record exists for the cast
+
+
+RESULT HIERARCHY:
+
+The interface communicates:
+
+1. what Fate rolled
+2. what the modifier changed it to
+3. what outcome FateCaster resolved
+
+Example:
+
+[ LARGE D20 ]
+17
+
+Your Fate has been cast: 19
+
+SUCCESS
+
+Raw 17 +2 = 19
+TN 15
+
+Natural override example:
+
+[ LARGE D20 ]
+20
+
+Your Fate has been cast: 15
+
+CRITICAL SUCCESS
+NATURAL 20
+
+Raw 20 -5 = 15
+TN 20
+
+
+OUTCOME ACCESSIBILITY:
+
+Outcome meaning must always be written explicitly:
+
+- CRITICAL SUCCESS
+- SUCCESS
+- FAILURE
+- CRITICAL FAILURE
+
+Color, weight, and animation may reinforce meaning,
+but color must never be the only signal.
+
+
+REPEATED CAST BEHAVIOR:
+
+Modifier and TN remain where the user set them during the current app session.
+
+The previous completed result remains visible until another cast begins.
+
+Changing Modifier or TN prepares the NEXT cast.
+
+Changing those controls must not alter or erase the previous completed result.
+
+When another cast begins, the completed result transitions to:
+
+"Awaiting your Fate…"
+
+
+SESSION / RESTART BEHAVIOR:
+
+During the current app session:
+
+- Modifier persists
+- TN persists
+- last completed result persists
+
+On a fresh app launch:
+
+- Modifier resets to +0
+- TN resets to 10
+- CAST result returns to no-result state
+
+Persistent HISTORY is not erased by app restart.
+
+
+NAVIGATION:
+
+CAST and HISTORY are persistent bottom-navigation destinations.
+
+No hamburger menu is required.
+
+No swipe gesture is required.
+
+Both primary screens remain one tap apart.
+
+
+RULE:
+
+The CAST UI must never redefine or duplicate authoritative
+resolution mathematics.
+
+FC-001 through FC-009 remain authoritative.
+
+The screen presents and coordinates a cast;
+the pure Kotlin roll resolver resolves it.
+
 
 ============================================================
 🔧 BLOCK 20 — OPEN PRODUCT QUESTIONS
 ============================================================
 
-NOT YET SETTLED:
+THE FOLLOWING ITEMS ARE NOT YET SETTLED:
+
+RELEASE:
 
 - release signing workflow
-- exact v1 optional settings
-- final Play Store title / short description / full description
-- icon and visual identity
-- exact CAST screen visual layout
-- exact HISTORY screen visual layout
+- Play Console testing / release path
+- final Play Store title
+- final Play Store short description
+- final Play Store full description
+
+
+PRESENTATION:
+
+- final icon / visual identity
+- final color system
+- final typography
+- exact animation timing
+- exact sound behavior, if any
+- exact haptic behavior, if any
+
+
+HISTORY SCREEN:
+
+- exact HISTORY screen layout
+- exact history-item visual structure
+- Clear History confirmation behavior
+
+
+OPTIONAL V1 SETTINGS:
+
+- whether sound is included in v1
+- whether haptics are included in v1
+- where any included presentation controls appear
+
+
+ALREADY SETTLED:
+
+The CAST screen behavioral contract is settled under FC-015.
+
+Do not reopen:
+
+- CAST screen primary structure
+- stepper-based Modifier control
+- stepper-based TN control
+- CAST FATE single-action flow
+- raw d20 as the dominant die value
+- READY / CASTING / RESULT states
+- atomic cast behavior
+- repeated-cast behavior
+- CAST / HISTORY bottom navigation
+
+unless implementation reveals a concrete problem.
+
 
 RULE:
 
+An item remains open until it is explicitly decided and recorded.
+
 Do not convert an open question into implementation truth
-without explicitly recording the decision.
+merely because an implementation choice seems convenient.
+
+Presentation choices may refine appearance,
+but must not alter settled product behavior or resolution rules.
 
 
 ============================================================
@@ -786,13 +1057,34 @@ CURRENT PROJECT:
 
 FateCaster
 
-CURRENT MILESTONE:
 
-FC-010 — Android foundation is settled.
-FC-011 — application ID is settled.
-FC-012 — minimum SDK is settled.
-FC-013 — target SDK is settled.
-FC-014 — initial version is settled.
+CURRENT STATUS:
+
+Pre-build.
+
+Android baseline definition is complete.
+
+CAST screen behavioral contract is complete.
+
+
+SETTLED THROUGH:
+
+FC-015
+
+
+CURRENT BASELINE:
+
+Language:
+Kotlin
+
+UI:
+Jetpack Compose
+
+Application model:
+Single Activity
+
+Architecture:
+Small layered architecture
 
 Application ID / namespace:
 ai.voidwalker.fatecaster
@@ -807,42 +1099,66 @@ Initial version:
 versionCode 1
 versionName 0.1.0
 
-ANDROID BASELINE:
-Complete.
 
-Next milestone:
+CAST SCREEN:
 
-Map the CAST screen in detail.
+FC-015 is authoritative.
 
-COMPLETED:
+The CAST screen now has a defined:
 
-- FateCaster selected as CaveCode Reference Implementation 001.
-- Standalone Android app confirmed as the target.
-- Google Play Store release confirmed as a project goal.
-- V1 deliberately constrained to a small d20-resolution application.
-- FC-001 through FC-009 ratified.
-- Local-first / no-account / no-backend / no-AI direction established.
-- Broken Frontier integration explicitly deferred.
-- Release lifecycle recognized as part of the artifact.
-- FateCaster master project map established on main.
-- FC-010 ratified.
-- Kotlin selected as the implementation language.
-- Jetpack Compose selected for Android UI.
-- Single Activity selected as the application model.
-- Small layered architecture selected.
-- Core roll resolution will live in a pure Kotlin resolver independent
-  of the Android UI.
-- A domain layer is not required unless actual complexity later proves
-  that one is useful.
+- layout structure
+- input model
+- d20 presentation role
+- CAST FATE interaction
+- READY state
+- CASTING state
+- RESULT state
+- result hierarchy
+- natural-override presentation
+- repeated-cast behavior
+- session / restart behavior
+- navigation behavior
+- atomic-cast rule
+
+
+CURRENT MILESTONE:
+
+Define the HISTORY screen contract.
 
 
 NEXT ACTION:
 
-Define the CAST screen contract and layout.
+Design the HISTORY screen as one coherent decision batch.
 
-Do not begin Android implementation until the CAST screen
-has been mapped clearly enough that implementation does not
-have to invent product behavior.
+Settle at minimum:
+
+1. overall HISTORY layout
+2. information shown in each history item
+3. ordering of casts
+4. Clear History placement
+5. Clear History confirmation behavior
+6. empty-history state
+7. behavior after clearing history
+
+Do not update CaveCode after every small HISTORY decision.
+
+Complete the HISTORY contract first,
+then checkpoint CaveCode once.
+
+
+DO NOT START YET:
+
+Do not begin Android implementation until the HISTORY screen
+is defined clearly enough that implementation does not need
+to invent product behavior.
+
+
+RESUME RULE:
+
+If work is interrupted before the HISTORY contract is complete,
+update this block with the exact unfinished decision
+before stopping.
+
 
 ============================================================
 🖍️ BLOCK 22 — HANDOFF SNAPSHOT
@@ -853,140 +1169,89 @@ DATE:
 2026-08-16
 
 
-WHAT CHANGED?
+CHECKPOINT:
 
-The project moved from completed product definition into
-Android baseline definition.
+Android baseline complete.
+CAST screen contract complete.
+HISTORY screen contract is next.
 
-FC-010 — Android foundation was ratified.
-FC-011 — application ID was ratified.
-FC-012 — minimum SDK was ratified.
-FC-013 — target SDK was ratified.
-FC-014 — initial version was ratified.
+
+WHAT CHANGED IN THIS WORK SESSION?
+
+FC-015 — CAST SCREEN CONTRACT was completed.
+
+Instead of updating CaveCode after every small decision,
+the entire CAST screen was designed as one coherent batch
+and checkpointed afterward.
 
 
 WHAT WAS DECIDED?
 
-FC-010:
+FC-015 establishes that:
 
-Language:
-Kotlin
-
-UI:
-Jetpack Compose
-
-Application model:
-Single Activity
-
-Architecture:
-Small layered architecture.
-
-The UI layer contains CAST and HISTORY with appropriate
-screen-level state holders / ViewModels.
-
-The authoritative roll resolver will be pure Kotlin and independent
-of the Android UI.
-
-Local roll history belongs to the data layer.
-
-A separate domain layer is not required for v1 unless actual
-complexity later proves that one is useful.
-
-FC-011:
-
-Application ID:
-ai.voidwalker.fatecaster
-
-Android namespace:
-ai.voidwalker.fatecaster
-
-The namespace and application ID remain identical unless a
-future concrete technical requirement justifies separating them.
-
-FC-012:
-
-Minimum SDK:
-API 23
-
-Android version:
-Android 6.0 Marshmallow
-
-FateCaster will not carry compatibility work for Android versions
-below API 23 without a concrete future requirement.
-
-FC-013:
-
-Target SDK:
-API 36
-
-Android version:
-Android 16
-
-FateCaster begins with the current Google Play release baseline
-rather than starting on a target SDK that would immediately need
-to be advanced.
-
-Future target SDK changes are release-maintenance decisions and
-must be recorded before implementation.
-
-FC-014:
-
-versionCode:
-1
-
-versionName:
-0.1.0
-
-FateCaster begins as a pre-release 0.1.0 build.
-
-versionCode must increase for subsequent Google Play uploads
-and must never be reused after upload.
+- CAST uses a single-column primary layout.
+- A large faceted d20 is the dominant visual element.
+- The d20 always displays the raw roll.
+- Modifier uses tap-only stepper controls from -10 through +10.
+- TN uses tap-only stepper controls from 1 through 30.
+- No sliders are used.
+- No keyboard entry is used.
+- Stepper controls do not wrap at their limits.
+- CAST FATE is one large primary action.
+- One tap performs the complete cast.
+- A cast is atomic.
+- Inputs are captured and frozen when casting begins.
+- Exactly one authoritative raw d20 is generated per cast.
+- Fake intermediate roll numbers are prohibited.
+- One completed cast creates exactly one history record.
+- CAST has READY, CASTING, and RESULT states.
+- "Awaiting your Fate…" is used during CASTING.
+- "Your Fate has been cast: [FINAL]" is used for the result.
+- Outcome tier is always written explicitly.
+- Natural 1 / Natural 20 status is shown when applicable.
+- Raw roll, modifier, final value, and TN remain visible.
+- Modifier and TN persist during the current app session.
+- Changing future-cast inputs does not alter the previous result.
+- Fresh launch resets CAST controls to Modifier +0 and TN 10.
+- Fresh launch displays no fabricated previous result.
+- Persistent HISTORY survives app restart.
+- CAST and HISTORY use persistent bottom navigation.
+- FateCaster does not force portrait orientation.
 
 
 WHY?
 
-FateCaster is deliberately small.
+The CAST screen should be fast enough to operate with taps,
+clear enough to understand at a glance,
+and strict enough that UI code cannot accidentally redefine
+the authoritative roll rules.
 
-The architecture should make the roll rules easy to test,
-keep UI concerns separate from resolution logic, and avoid
-adding layers merely because a larger application might need them.
+The interaction is deliberately simple:
 
-The pure Kotlin resolver also preserves a clean future path for
-other interfaces to use the same authoritative FateCaster rules.
-
-
-SCOPE CHECK:
-
-Still d20 only.
-
-Still two primary screens.
-
-Still local-first.
-
-Still no account.
-
-Still no backend.
-
-Still no AI requirement.
-
-Still no Broken Frontier dependency.
-
-FC-010 defines implementation structure.
-It does not expand v1 product scope.
+set Modifier
+→ set TN
+→ tap CAST FATE
+→ receive one authoritative result
 
 
 WHAT CURRENTLY WORKS?
 
-The product contract and Android foundation are defined clearly
-enough to continue Android baseline decisions.
+The product rules are defined.
+
+The Android baseline is defined.
+
+The CAST behavioral contract is defined.
+
+A builder should not need to invent CAST behavior during implementation.
 
 
-WHAT IS CURRENTLY BROKEN?
+WHAT IS CURRENTLY NOT BUILT?
 
-No known product-contract or architecture decision is blocking
-the next baseline decision.
+No Android application implementation exists yet.
 
-Android application implementation has not begun yet.
+No HISTORY screen contract has been completed yet.
+
+Release signing and Play Store presentation details remain open.
 
 
 WHAT REMAINS UNCERTAIN?
@@ -996,21 +1261,31 @@ See BLOCK 20 — OPEN PRODUCT QUESTIONS.
 
 WHAT SHOULD HAPPEN NEXT?
 
-Map the CAST screen in detail.
+Define the HISTORY screen contract as one coherent batch.
+
+After the HISTORY contract is complete:
+
+1. checkpoint CaveCode once
+2. review the complete pre-build contract
+3. decide whether implementation can begin
 
 
 WHAT IS THE NEXT HUMAN OR AI MOST LIKELY TO MISUNDERSTAND?
 
-FC-010 does not authorize architectural expansion.
+FC-015 settles CAST behavior,
+but does NOT settle final colors, fonts, animation timing,
+sound, haptics, or other presentation polish.
 
-Do not add a domain layer merely because it is common in larger apps.
+Do not reopen CAST behavior merely to make implementation easier.
 
-Do not place authoritative roll mathematics inside Compose UI code.
+Do not place roll-resolution mathematics inside Compose UI code.
 
-The pure Kotlin roll resolver owns the implementation of
-FC-001 through FC-009.
+The pure Kotlin resolver remains authoritative for FC-001 through FC-009.
 
-ViewModels coordinate UI state; they do not redefine the roll rules.
+Do not update CaveCode after every tiny HISTORY decision.
+
+Use one checkpoint after the coherent HISTORY design batch,
+unless work is interrupted before that batch is complete.
 
 Do not turn FateCaster into Broken Frontier.
 
