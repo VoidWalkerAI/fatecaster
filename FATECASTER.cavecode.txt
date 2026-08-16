@@ -703,6 +703,33 @@ RULE:
 Do not lower the minimum SDK merely to support obsolete Android
 versions unless a real user or deployment requirement justifies it.
 
+DECISION FC-013 — TARGET SDK
+
+Target SDK:
+API 36
+
+Android version:
+Android 16
+
+WHY:
+
+FateCaster is a new Google Play application.
+
+FateCaster is being built immediately before Google Play's
+API 36 target requirement takes effect for new phone/tablet apps
+and updates.
+
+Targeting API 36 from the beginning avoids creating an obsolete
+release baseline that would need to be changed almost immediately.
+
+RULE:
+
+FateCaster should target the current Google Play-required API
+level at release time.
+
+Future target SDK changes are release-maintenance work and should
+be recorded in CaveCode before implementation.
+
 
 ============================================================
 🔧 BLOCK 20 — OPEN PRODUCT QUESTIONS
@@ -710,7 +737,6 @@ versions unless a real user or deployment requirement justifies it.
 
 NOT YET SETTLED:
 
-- target SDK
 - versioning starting point
 - release signing workflow
 - exact v1 optional settings
@@ -745,9 +771,12 @@ ai.voidwalker.fatecaster
 Minimum SDK:
 API 23 — Android 6.0 Marshmallow
 
+Target SDK:
+API 36 — Android 16
+
 Next decision:
 
-FC-013 — target SDK
+FC-014 — initial versionCode / versionName
 
 COMPLETED:
 
@@ -773,13 +802,11 @@ COMPLETED:
 
 NEXT ACTION:
 
-Decide FC-013 — target SDK.
+Decide FC-014 — initial versionCode / versionName.
 
-After FC-013:
+After FC-014:
 
-1. initial versionCode / versionName
-
-Then map the CAST screen in detail.
+Map the CAST screen in detail.
 
 ============================================================
 🖍️ BLOCK 22 — HANDOFF SNAPSHOT
@@ -798,6 +825,7 @@ Android baseline definition.
 FC-010 — Android foundation was ratified.
 FC-011 — application ID was ratified.
 FC-012 — minimum SDK was ratified.
+FC-013 — target SDK was ratified.
 
 
 WHAT WAS DECIDED?
@@ -848,6 +876,21 @@ Android 6.0 Marshmallow
 
 FateCaster will not carry compatibility work for Android versions
 below API 23 without a concrete future requirement.
+
+FC-013:
+
+Target SDK:
+API 36
+
+Android version:
+Android 16
+
+FateCaster begins with the current Google Play release baseline
+rather than starting on a target SDK that would immediately need
+to be advanced.
+
+Future target SDK changes are release-maintenance decisions and
+must be recorded before implementation.
 
 
 WHY?
@@ -905,7 +948,7 @@ WHAT SHOULD HAPPEN NEXT?
 
 Decide:
 
-FC-013 — target SDK
+FC-014 — initial versionCode / versionName
 
 
 WHAT IS THE NEXT HUMAN OR AI MOST LIKELY TO MISUNDERSTAND?
