@@ -5,7 +5,7 @@ CaveCode Reference Implementation 001
 ============================================================
 
 STATUS:
-Product definition complete / pre-build
+Android baseline definition in progress / pre-build
 
 PURPOSE OF THIS FILE:
 
@@ -631,6 +631,41 @@ TN 1 through 30 is intentional.
 Upper TNs represent extreme difficulty and need not be
 readily attainable under every modifier.
 
+FC-010
+Android foundation:
+
+Language:
+Kotlin
+
+UI:
+Jetpack Compose
+
+Application model:
+Single Activity
+
+Architecture:
+Small layered architecture.
+
+UI layer:
+- CAST screen
+- HISTORY screen
+- screen-level state holders / ViewModels
+
+Core resolution:
+- pure Kotlin roll resolver
+- independent of Android UI
+- authoritative implementation of FC-001 through FC-009
+
+Data layer:
+- local history storage
+
+Domain layer:
+Not required for v1 unless actual complexity later proves it necessary.
+
+Do not introduce architectural layers merely for theoretical scalability.
+
+FateCaster v1 should remain small, testable, and understandable.
+
 
 ============================================================
 🔧 BLOCK 20 — OPEN PRODUCT QUESTIONS
@@ -638,7 +673,6 @@ readily attainable under every modifier.
 
 NOT YET SETTLED:
 
-- exact Android UI framework / project architecture
 - application ID
 - minimum SDK
 - target SDK
@@ -666,8 +700,13 @@ FateCaster
 
 CURRENT MILESTONE:
 
-Product definition complete.
-Next milestone: Android baseline definition.
+Android baseline definition in progress.
+
+FC-010 — Android foundation is settled.
+
+Next decision:
+
+FC-011 — application ID
 
 
 COMPLETED:
@@ -680,31 +719,29 @@ COMPLETED:
 - Local-first / no-account / no-backend / no-AI direction established.
 - Broken Frontier integration explicitly deferred.
 - Release lifecycle recognized as part of the artifact.
-- FateCaster GitHub repository created.
-- Feature branch and PR #1 created for the master map.
-- Human review caught that the PR contained an older stale map.
-- Council review identified three clarifications inside the existing
-  v1 decision tree: natural-override display semantics, bounded history,
-  and explicit intent for extreme TNs.
-- Those clarifications were resolved without expanding v1 scope.
-- The stale repository copy was replaced with the current
-  FC-001 through FC-009 master map.
-- Final review added the no-natural-override qualifier to FC-004.
-- Reference test vectors were added for the resolution contract.
+- FateCaster master project map established on main.
+- FC-010 ratified.
+- Kotlin selected as the implementation language.
+- Jetpack Compose selected for Android UI.
+- Single Activity selected as the application model.
+- Small layered architecture selected.
+- Core roll resolution will live in a pure Kotlin resolver independent
+  of the Android UI.
+- A domain layer is not required unless actual complexity later proves
+  that one is useful.
 
 
 NEXT ACTION:
 
-Define the Android baseline:
+Decide FC-011 — application ID.
 
-1. Android UI framework / architecture
-2. application ID
-3. minimum SDK
-4. target SDK
-5. initial versionCode / versionName
+After FC-011:
+
+1. minimum SDK
+2. target SDK
+3. initial versionCode / versionName
 
 Then map the CAST screen in detail.
-
 
 ============================================================
 🖍️ BLOCK 22 — HANDOFF SNAPSHOT
@@ -712,49 +749,55 @@ Then map the CAST screen in detail.
 
 DATE:
 
-2026-08-15
+2026-08-16
 
 
 WHAT CHANGED?
 
-FC-007 through FC-009 were added as refinements to the already
-ratified FateCaster v1 decision tree.
+The project moved from completed product definition into
+Android baseline definition.
 
-They resolve:
-
-- what calculation/display means during a natural override
-- how much local roll history v1 retains
-- why the TN range intentionally extends to extreme difficulty
-
-Final review also:
-
-- added the no-natural-roll-override qualifier to FC-004
-- added reference test vectors for the resolution contract
-- replaced the stale repository copy with the current master map
+FC-010 — Android foundation was ratified.
 
 
 WHAT WAS DECIDED?
 
-FC-007:
-Always calculate and preserve raw roll, modifier, and final value.
-Natural 1/20 overrides the outcome tier, not the arithmetic record.
+FC-010:
 
-FC-008:
-Retain the most recent 100 casts.
-When a new cast would exceed the limit, the oldest retained cast is removed.
-Provide an intentional Clear History action on HISTORY.
+Language:
+Kotlin
 
-FC-009:
-TN 1–30 remains intentional.
-Upper TNs represent extreme difficulty.
+UI:
+Jetpack Compose
+
+Application model:
+Single Activity
+
+Architecture:
+Small layered architecture.
+
+The UI layer contains CAST and HISTORY with appropriate
+screen-level state holders / ViewModels.
+
+The authoritative roll resolver will be pure Kotlin and independent
+of the Android UI.
+
+Local roll history belongs to the data layer.
+
+A separate domain layer is not required for v1 unless actual
+complexity later proves that one is useful.
 
 
 WHY?
 
-These decisions close ambiguity that would otherwise have to be
-invented during implementation.
+FateCaster is deliberately small.
 
-They do not expand the product beyond the existing goals.
+The architecture should make the roll rules easy to test,
+keep UI concerns separate from resolution logic, and avoid
+adding layers merely because a larger application might need them.
+
+The pure Kotlin resolver also preserves a clean future path for
+other interfaces to use the same authoritative FateCaster rules.
 
 
 SCOPE CHECK:
@@ -773,21 +816,22 @@ Still no AI requirement.
 
 Still no Broken Frontier dependency.
 
-Still aimed at learning the Android / Google Play release lifecycle
-while testing CaveCode on a complete, deliberately small application.
+FC-010 defines implementation structure.
+It does not expand v1 product scope.
 
 
 WHAT CURRENTLY WORKS?
 
-The resolution contract and bounded-history behavior are defined
-clearly enough for implementation without inventing these rules.
-
-The current master map reflects the settled product contract.
+The product contract and Android foundation are defined clearly
+enough to continue Android baseline decisions.
 
 
 WHAT IS CURRENTLY BROKEN?
 
-No known product-contract issue is blocking implementation.
+No known product-contract or architecture decision is blocking
+the next baseline decision.
+
+Android application implementation has not begun yet.
 
 
 WHAT REMAINS UNCERTAIN?
@@ -797,28 +841,24 @@ See BLOCK 20 — OPEN PRODUCT QUESTIONS.
 
 WHAT SHOULD HAPPEN NEXT?
 
-Begin the Android baseline decisions recorded in BLOCK 20.
+Decide:
 
-Then map the CAST screen in detail.
+FC-011 — application ID
 
 
 WHAT IS THE NEXT HUMAN OR AI MOST LIKELY TO MISUNDERSTAND?
 
-FC-007 through FC-009 are refinements, not new product scope.
+FC-010 does not authorize architectural expansion.
 
-Do not add more dice to v1.
+Do not add a domain layer merely because it is common in larger apps.
 
-Do not add more primary screens to v1.
+Do not place authoritative roll mathematics inside Compose UI code.
 
-Do not alter the critical threshold without a new decision.
+The pure Kotlin roll resolver owns the implementation of
+FC-001 through FC-009.
 
-Natural 1 and natural 20 override outcome tier,
-but the modifier-adjusted final value is still calculated and recorded.
+ViewModels coordinate UI state; they do not redefine the roll rules.
 
 Do not turn FateCaster into Broken Frontier.
 
-Broken Frontier integration comes later.
-
-============================================================
-END — FATECASTER.cavecode.txt
-============================================================
+Broken Frontier integration remains future work.
