@@ -344,7 +344,10 @@ The final interface must communicate both:
 For natural overrides, the interface must also make the
 natural 1 or natural 20 status visible.
 
-Exact typography and visual hierarchy remain unresolved.
+The semantic result hierarchy is settled by FC-015.
+
+Exact typography, sizing, spacing, color, and other
+presentation styling remain unresolved.
 
 
 ============================================================
@@ -544,7 +547,7 @@ Possible later features:
 - custom dice
 - expanded history tools
 - share / export
-- accessibility improvements
+- additional accessibility improvements beyond the v1 baseline
 - Broken Frontier integration
 
 These are possibilities, not promises.
@@ -1121,7 +1124,8 @@ Clear:
 - keeps the user on HISTORY
 - immediately displays the empty-history state
 
-Clear History is disabled or unavailable when history is already empty.
+When HISTORY is empty,
+Clear History remains visible but is disabled.
 
 
 EMPTY HISTORY:
