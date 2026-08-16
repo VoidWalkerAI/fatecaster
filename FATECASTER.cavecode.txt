@@ -295,8 +295,13 @@ TN: 20
 override: NATURAL 20
 outcome: CRITICAL SUCCESS
 
-The exact visual arrangement is still a UI decision,
-but the app must not hide or falsify either the roll math
+FC-015 settles the required result hierarchy
+and natural-override presentation.
+
+Exact typography, sizing, spacing, color, and other
+presentation styling remain unresolved.
+
+The app must not hide or falsify either the roll math
 or the override outcome.
 
 REFERENCE TEST VECTORS:
@@ -460,11 +465,12 @@ HISTORY SCREEN:
 
 Displays previous casts.
 
-Each visible history item should provide enough information
-to understand the roll without opening a separate detail screen.
+Each visible history item must provide the information
+required by FC-016 and must be understandable without
+opening a separate detail screen.
 
 The HISTORY screen also provides the Clear History action
-defined in FC-008.
+defined by FC-008 and FC-016.
 
 
 V1 DOES NOT REQUIRE:
@@ -1238,7 +1244,9 @@ FateCaster
 
 CURRENT STATUS:
 
-Pre-build.
+Implementation-ready.
+
+Pre-build readiness review passed.
 
 Android baseline definition is complete.
 
@@ -1343,11 +1351,23 @@ the affected decision.
 
 RESUME RULE:
 
-If the pre-build review finds no blocking uncertainty,
-the next milestone becomes Android implementation.
+Resume from the first incomplete item in the Android
+implementation build order.
 
-If a blocking uncertainty is found,
-settle only that uncertainty before proceeding.
+Do not repeat the pre-build readiness review unless
+implementation exposes a concrete contradiction or missing
+product decision.
+
+If implementation is interrupted,
+record:
+
+- the last completed implementation milestone
+- the current incomplete milestone
+- what currently works
+- what is broken
+- the exact next implementation action
+
+before stopping.
 
 
 ============================================================
@@ -1379,6 +1399,17 @@ FC-016 — HISTORY SCREEN CONTRACT was completed.
 The HISTORY screen was designed as one coherent decision batch
 and CaveCode was checkpointed once afterward.
 
+The complete FateCaster pre-build contract was then reviewed.
+
+PRE-BUILD READINESS REVIEW:
+
+PASS
+
+No unresolved item in BLOCK 20 prevents Android
+implementation from beginning.
+
+No additional product behavior was added merely to pass
+the readiness review.
 
 WHAT WAS DECIDED?
 
