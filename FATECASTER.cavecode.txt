@@ -666,6 +666,22 @@ Do not introduce architectural layers merely for theoretical scalability.
 
 FateCaster v1 should remain small, testable, and understandable.
 
+DECISION FC-011 — APPLICATION ID
+
+Application ID:
+ai.voidwalker.fatecaster
+
+Android namespace:
+ai.voidwalker.fatecaster
+
+RULE:
+Keep the Android namespace and application ID identical
+unless a future technical requirement gives a concrete reason
+to separate them.
+
+The application ID is release-critical identity and must not be
+casually changed after publication.
+
 
 ============================================================
 🔧 BLOCK 20 — OPEN PRODUCT QUESTIONS
@@ -673,7 +689,6 @@ FateCaster v1 should remain small, testable, and understandable.
 
 NOT YET SETTLED:
 
-- application ID
 - minimum SDK
 - target SDK
 - versioning starting point
@@ -700,13 +715,15 @@ FateCaster
 
 CURRENT MILESTONE:
 
-Android baseline definition in progress.
-
 FC-010 — Android foundation is settled.
+FC-011 — application ID is settled.
+
+Application ID / namespace:
+ai.voidwalker.fatecaster
 
 Next decision:
 
-FC-011 — application ID
+FC-012 — minimum SDK
 
 
 COMPLETED:
@@ -733,13 +750,12 @@ COMPLETED:
 
 NEXT ACTION:
 
-Decide FC-011 — application ID.
+Decide FC-012 — minimum SDK.
 
-After FC-011:
+After FC-012:
 
-1. minimum SDK
-2. target SDK
-3. initial versionCode / versionName
+1. target SDK
+2. initial versionCode / versionName
 
 Then map the CAST screen in detail.
 
@@ -758,6 +774,7 @@ The project moved from completed product definition into
 Android baseline definition.
 
 FC-010 — Android foundation was ratified.
+FC-011 — application ID was ratified.
 
 
 WHAT WAS DECIDED?
@@ -786,6 +803,17 @@ Local roll history belongs to the data layer.
 
 A separate domain layer is not required for v1 unless actual
 complexity later proves that one is useful.
+
+FC-011:
+
+Application ID:
+ai.voidwalker.fatecaster
+
+Android namespace:
+ai.voidwalker.fatecaster
+
+The namespace and application ID remain identical unless a
+future concrete technical requirement justifies separating them.
 
 
 WHY?
@@ -843,7 +871,7 @@ WHAT SHOULD HAPPEN NEXT?
 
 Decide:
 
-FC-011 — application ID
+FC-012 — minimum SDK
 
 
 WHAT IS THE NEXT HUMAN OR AI MOST LIKELY TO MISUNDERSTAND?
