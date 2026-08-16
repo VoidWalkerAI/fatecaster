@@ -5,7 +5,7 @@ CaveCode Reference Implementation 001
 ============================================================
 
 STATUS:
-Android baseline definition in progress / pre-build
+Pre-build — Android baseline and primary screen contracts complete
 
 PURPOSE OF THIS FILE:
 
@@ -979,12 +979,202 @@ FC-001 through FC-009 remain authoritative.
 The screen presents and coordinates a cast;
 the pure Kotlin roll resolver resolves it.
 
+DECISION FC-016 — HISTORY SCREEN CONTRACT
+
+PRIMARY LAYOUT:
+
+FateCaster HISTORY uses one vertically scrolling list.
+
+Ordering is fixed:
+
+newest cast first
+oldest retained cast last
+
+Older casts continue downward through the list.
+
+HISTORY uses the same persistent bottom navigation as CAST.
+
+HISTORY is selected while viewing this screen.
+
+
+HISTORY ITEM:
+
+Each retained cast is displayed as one self-contained,
+read-only history item.
+
+Each item displays:
+
+- final roll value
+- explicit outcome tier
+- NATURAL 1 / NATURAL 20 when applicable
+- raw d20 result
+- modifier
+- calculated final value
+- target number
+- one cast timestamp containing date and time
+
+Example:
+
+19                         SUCCESS
+
+Raw 17 +2 = 19
+TN 15
+
+Aug 16, 2026 · 10:00 AM
+
+
+Natural override example:
+
+15                CRITICAL SUCCESS
+
+NATURAL 20
+
+Raw 20 -5 = 15
+TN 20
+
+Aug 16, 2026 · 9:53 AM
+
+
+TIMESTAMP:
+
+Each cast has one timestamp.
+
+The timestamp represents the date and time the cast occurred.
+
+Use the device's normal local date/time presentation.
+
+FateCaster v1 does not require a special proprietary,
+military, or secondary timestamp format.
+
+
+HISTORY ITEM INTERACTION:
+
+History items are records, not controls.
+
+For v1, history items are not:
+
+- editable
+- individually deletable
+- tappable for a detail screen
+- swipeable for actions
+- reroll controls
+- long-press menus
+
+There is no separate history-detail screen.
+
+
+RETENTION / LIST BEHAVIOR:
+
+FateCaster displays all currently retained casts
+in the same scrolling list.
+
+Maximum retained history:
+
+100 casts
+
+No pagination.
+
+No Load More action.
+
+No search.
+
+No filtering.
+
+No sorting control.
+
+No grouping by date.
+
+Ordering is always newest first.
+
+When cast 101 is created,
+the oldest retained cast is removed according to FC-008
+and the new cast becomes the first history item.
+
+
+CLEAR HISTORY:
+
+Clear History is a visible secondary action
+in the HISTORY header.
+
+Example:
+
+HISTORY                         Clear History
+
+Clear History must not erase records immediately.
+
+Selecting Clear History presents one confirmation:
+
+Clear history?
+
+This will remove all saved casts.
+
+[ Cancel ]     [ Clear ]
+
+Cancel:
+
+- changes nothing
+- closes the confirmation
+
+Clear:
+
+- deletes all retained casts
+- keeps the user on HISTORY
+- immediately displays the empty-history state
+
+Clear History is disabled or unavailable when history is already empty.
+
+
+EMPTY HISTORY:
+
+When no casts are retained, HISTORY displays:
+
+No casts yet.
+
+Cast your fate to begin.
+
+Do not display:
+
+- fabricated example casts
+- fake history records
+- required tutorial cards
+
+After Clear History succeeds,
+the same empty state is displayed.
+
+The user is not automatically redirected to CAST.
+
+
+CURRENT-RECORD BEHAVIOR:
+
+A completed cast is written to HISTORY immediately.
+
+The next time HISTORY is viewed,
+the completed cast is already present as the newest item.
+
+HISTORY requires:
+
+- no manual refresh
+- no refresh button
+- no pull-to-refresh
+- no new-result banner
+
+HISTORY always represents the current retained record.
+
+
+RULE:
+
+HISTORY is a simple local record of completed casts.
+
+It must not silently evolve into a roll-management,
+editing, search, or analytics system during FateCaster v1.
+
 
 ============================================================
 🔧 BLOCK 20 — OPEN PRODUCT QUESTIONS
 ============================================================
 
 THE FOLLOWING ITEMS ARE NOT YET SETTLED:
+
 
 RELEASE:
 
@@ -1005,13 +1195,6 @@ PRESENTATION:
 - exact haptic behavior, if any
 
 
-HISTORY SCREEN:
-
-- exact HISTORY screen layout
-- exact history-item visual structure
-- Clear History confirmation behavior
-
-
 OPTIONAL V1 SETTINGS:
 
 - whether sound is included in v1
@@ -1021,21 +1204,15 @@ OPTIONAL V1 SETTINGS:
 
 ALREADY SETTLED:
 
-The CAST screen behavioral contract is settled under FC-015.
+FC-015 settles the CAST screen behavioral contract.
 
-Do not reopen:
+FC-016 settles the HISTORY screen behavioral contract.
 
-- CAST screen primary structure
-- stepper-based Modifier control
-- stepper-based TN control
-- CAST FATE single-action flow
-- raw d20 as the dominant die value
-- READY / CASTING / RESULT states
-- atomic cast behavior
-- repeated-cast behavior
-- CAST / HISTORY bottom navigation
+Do not reopen settled screen behavior merely because
+a different implementation would be convenient.
 
-unless implementation reveals a concrete problem.
+Presentation decisions may refine appearance,
+but must not alter settled product behavior.
 
 
 RULE:
@@ -1044,9 +1221,6 @@ An item remains open until it is explicitly decided and recorded.
 
 Do not convert an open question into implementation truth
 merely because an implementation choice seems convenient.
-
-Presentation choices may refine appearance,
-but must not alter settled product behavior or resolution rules.
 
 
 ============================================================
@@ -1066,10 +1240,12 @@ Android baseline definition is complete.
 
 CAST screen behavioral contract is complete.
 
+HISTORY screen behavioral contract is complete.
+
 
 SETTLED THROUGH:
 
-FC-015
+FC-016
 
 
 CURRENT BASELINE:
@@ -1100,64 +1276,51 @@ versionCode 1
 versionName 0.1.0
 
 
-CAST SCREEN:
+PRIMARY SCREEN CONTRACTS:
 
+CAST:
 FC-015 is authoritative.
 
-The CAST screen now has a defined:
-
-- layout structure
-- input model
-- d20 presentation role
-- CAST FATE interaction
-- READY state
-- CASTING state
-- RESULT state
-- result hierarchy
-- natural-override presentation
-- repeated-cast behavior
-- session / restart behavior
-- navigation behavior
-- atomic-cast rule
+HISTORY:
+FC-016 is authoritative.
 
 
 CURRENT MILESTONE:
 
-Define the HISTORY screen contract.
+Pre-build readiness review.
 
 
 NEXT ACTION:
 
-Design the HISTORY screen as one coherent decision batch.
+Review the complete FateCaster v1 contract
+and determine whether any unresolved item in BLOCK 20
+must be settled before Android implementation begins.
 
-Settle at minimum:
+Do not resolve presentation details merely for completeness.
 
-1. overall HISTORY layout
-2. information shown in each history item
-3. ordering of casts
-4. Clear History placement
-5. Clear History confirmation behavior
-6. empty-history state
-7. behavior after clearing history
-
-Do not update CaveCode after every small HISTORY decision.
-
-Complete the HISTORY contract first,
-then checkpoint CaveCode once.
+Only settle an open question before implementation
+if implementation genuinely requires that decision.
 
 
-DO NOT START YET:
+IMPLEMENTATION GATE:
 
-Do not begin Android implementation until the HISTORY screen
-is defined clearly enough that implementation does not need
-to invent product behavior.
+Before beginning Android implementation, confirm that:
+
+1. FC-001 through FC-009 fully define resolution behavior.
+2. FC-010 through FC-014 fully define the Android baseline.
+3. FC-015 fully defines CAST behavior.
+4. FC-016 fully defines HISTORY behavior.
+5. No unresolved question requires the builder to invent
+   product behavior.
 
 
 RESUME RULE:
 
-If work is interrupted before the HISTORY contract is complete,
-update this block with the exact unfinished decision
-before stopping.
+If the pre-build review finds no blocking uncertainty,
+the next milestone becomes Android implementation.
+
+If a blocking uncertainty is found,
+settle only that uncertainty before proceeding.
 
 
 ============================================================
@@ -1173,85 +1336,79 @@ CHECKPOINT:
 
 Android baseline complete.
 CAST screen contract complete.
-HISTORY screen contract is next.
+HISTORY screen contract complete.
+
+FateCaster is ready for a pre-build readiness review.
 
 
 WHAT CHANGED IN THIS WORK SESSION?
 
-FC-015 — CAST SCREEN CONTRACT was completed.
+FC-016 — HISTORY SCREEN CONTRACT was completed.
 
-Instead of updating CaveCode after every small decision,
-the entire CAST screen was designed as one coherent batch
-and checkpointed afterward.
+The HISTORY screen was designed as one coherent decision batch
+and CaveCode was checkpointed once afterward.
 
 
 WHAT WAS DECIDED?
 
-FC-015 establishes that:
+FC-016 establishes that:
 
-- CAST uses a single-column primary layout.
-- A large faceted d20 is the dominant visual element.
-- The d20 always displays the raw roll.
-- Modifier uses tap-only stepper controls from -10 through +10.
-- TN uses tap-only stepper controls from 1 through 30.
-- No sliders are used.
-- No keyboard entry is used.
-- Stepper controls do not wrap at their limits.
-- CAST FATE is one large primary action.
-- One tap performs the complete cast.
-- A cast is atomic.
-- Inputs are captured and frozen when casting begins.
-- Exactly one authoritative raw d20 is generated per cast.
-- Fake intermediate roll numbers are prohibited.
-- One completed cast creates exactly one history record.
-- CAST has READY, CASTING, and RESULT states.
-- "Awaiting your Fate…" is used during CASTING.
-- "Your Fate has been cast: [FINAL]" is used for the result.
-- Outcome tier is always written explicitly.
-- Natural 1 / Natural 20 status is shown when applicable.
-- Raw roll, modifier, final value, and TN remain visible.
-- Modifier and TN persist during the current app session.
-- Changing future-cast inputs does not alter the previous result.
-- Fresh launch resets CAST controls to Modifier +0 and TN 10.
-- Fresh launch displays no fabricated previous result.
-- Persistent HISTORY survives app restart.
-- CAST and HISTORY use persistent bottom navigation.
-- FateCaster does not force portrait orientation.
+- HISTORY is one vertically scrolling list.
+- Newest retained cast appears first.
+- Up to 100 retained casts are shown.
+- Every history item is self-contained.
+- Every item shows final value and explicit outcome.
+- Raw d20, modifier, final value, and TN are shown.
+- Natural override status is shown when applicable.
+- Every cast has one date-and-time timestamp.
+- History items are read-only and non-interactive.
+- No individual deletion exists.
+- No separate detail screen exists.
+- No reroll action exists.
+- No search exists.
+- No filtering exists.
+- No alternate sorting exists.
+- No pagination exists.
+- Clear History is visible from HISTORY.
+- Clear History requires confirmation.
+- Clearing retains the user on HISTORY.
+- Empty HISTORY displays a simple no-casts state.
+- Completed casts appear in HISTORY immediately.
+- No manual refresh mechanism is required.
+- HISTORY always represents the current retained record.
 
 
 WHY?
 
-The CAST screen should be fast enough to operate with taps,
-clear enough to understand at a glance,
-and strict enough that UI code cannot accidentally redefine
-the authoritative roll rules.
+HISTORY exists to preserve and review actual casts.
 
-The interaction is deliberately simple:
-
-set Modifier
-→ set TN
-→ tap CAST FATE
-→ receive one authoritative result
+It should behave like a simple trustworthy log,
+not become a second management application.
 
 
 WHAT CURRENTLY WORKS?
 
-The product rules are defined.
+The product-resolution rules are defined.
 
 The Android baseline is defined.
 
 The CAST behavioral contract is defined.
 
-A builder should not need to invent CAST behavior during implementation.
+The HISTORY behavioral contract is defined.
+
+Both primary FateCaster screens now have enough behavioral definition
+that an implementation should not need to invent their product behavior.
 
 
 WHAT IS CURRENTLY NOT BUILT?
 
-No Android application implementation exists yet.
+No Android implementation exists yet.
 
-No HISTORY screen contract has been completed yet.
+No release bundle exists yet.
 
-Release signing and Play Store presentation details remain open.
+No signing workflow has been completed.
+
+No Play Console release work has begun.
 
 
 WHAT REMAINS UNCERTAIN?
@@ -1261,31 +1418,42 @@ See BLOCK 20 — OPEN PRODUCT QUESTIONS.
 
 WHAT SHOULD HAPPEN NEXT?
 
-Define the HISTORY screen contract as one coherent batch.
+Perform one pre-build readiness review.
 
-After the HISTORY contract is complete:
+Ask:
 
-1. checkpoint CaveCode once
-2. review the complete pre-build contract
-3. decide whether implementation can begin
+Does anything still unresolved prevent us from beginning
+the Android implementation correctly?
+
+If no:
+
+begin Android implementation.
+
+If yes:
+
+settle only the blocking issue,
+checkpoint it,
+then begin implementation.
 
 
 WHAT IS THE NEXT HUMAN OR AI MOST LIKELY TO MISUNDERSTAND?
 
-FC-015 settles CAST behavior,
-but does NOT settle final colors, fonts, animation timing,
-sound, haptics, or other presentation polish.
+CAST and HISTORY behavior are now settled.
 
-Do not reopen CAST behavior merely to make implementation easier.
+Do not redesign them during implementation merely because
+another UI approach seems attractive.
 
-Do not place roll-resolution mathematics inside Compose UI code.
+Presentation polish remains adjustable where it does not
+change product behavior.
 
-The pure Kotlin resolver remains authoritative for FC-001 through FC-009.
+Do not place authoritative resolution mathematics
+inside Compose UI code.
 
-Do not update CaveCode after every tiny HISTORY decision.
+The pure Kotlin resolver remains authoritative.
 
-Use one checkpoint after the coherent HISTORY design batch,
-unless work is interrupted before that batch is complete.
+Do not add search, filters, individual deletion,
+history editing, accounts, cloud services, or other features
+because they would be easy to implement.
 
 Do not turn FateCaster into Broken Frontier.
 
