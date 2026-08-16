@@ -682,6 +682,27 @@ to separate them.
 The application ID is release-critical identity and must not be
 casually changed after publication.
 
+DECISION FC-012 — MINIMUM SDK
+
+Minimum SDK:
+API 23
+
+Android version:
+Android 6.0 Marshmallow
+
+WHY:
+
+FateCaster is a new application using the current AndroidX
+and Jetpack Compose ecosystem.
+
+API 23 provides very broad device compatibility without requiring
+FateCaster to carry unnecessary compatibility work for older devices.
+
+RULE:
+
+Do not lower the minimum SDK merely to support obsolete Android
+versions unless a real user or deployment requirement justifies it.
+
 
 ============================================================
 🔧 BLOCK 20 — OPEN PRODUCT QUESTIONS
@@ -689,7 +710,6 @@ casually changed after publication.
 
 NOT YET SETTLED:
 
-- minimum SDK
 - target SDK
 - versioning starting point
 - release signing workflow
@@ -717,14 +737,17 @@ CURRENT MILESTONE:
 
 FC-010 — Android foundation is settled.
 FC-011 — application ID is settled.
+FC-012 — minimum SDK is settled.
 
 Application ID / namespace:
 ai.voidwalker.fatecaster
 
+Minimum SDK:
+API 23 — Android 6.0 Marshmallow
+
 Next decision:
 
-FC-012 — minimum SDK
-
+FC-013 — target SDK
 
 COMPLETED:
 
@@ -750,12 +773,11 @@ COMPLETED:
 
 NEXT ACTION:
 
-Decide FC-012 — minimum SDK.
+Decide FC-013 — target SDK.
 
-After FC-012:
+After FC-013:
 
-1. target SDK
-2. initial versionCode / versionName
+1. initial versionCode / versionName
 
 Then map the CAST screen in detail.
 
@@ -775,6 +797,7 @@ Android baseline definition.
 
 FC-010 — Android foundation was ratified.
 FC-011 — application ID was ratified.
+FC-012 — minimum SDK was ratified.
 
 
 WHAT WAS DECIDED?
@@ -814,6 +837,17 @@ ai.voidwalker.fatecaster
 
 The namespace and application ID remain identical unless a
 future concrete technical requirement justifies separating them.
+
+FC-012:
+
+Minimum SDK:
+API 23
+
+Android version:
+Android 6.0 Marshmallow
+
+FateCaster will not carry compatibility work for Android versions
+below API 23 without a concrete future requirement.
 
 
 WHY?
@@ -871,7 +905,7 @@ WHAT SHOULD HAPPEN NEXT?
 
 Decide:
 
-FC-012 — minimum SDK
+FC-013 — target SDK
 
 
 WHAT IS THE NEXT HUMAN OR AI MOST LIKELY TO MISUNDERSTAND?
