@@ -5,7 +5,7 @@ CaveCode Reference Implementation 001
 ============================================================
 
 STATUS:
-Implementation in progress — Milestone 1 complete
+Implementation in progress — Milestones 1–2 complete
 
 PURPOSE OF THIS FILE:
 
@@ -1301,42 +1301,57 @@ FC-016 is authoritative.
 
 CURRENT MILESTONE:
 
-Milestone 2 — Local history model / storage.
+Milestone 3 — CAST screen implementation.
 
 
 IMPLEMENTATION PROGRESS:
 
 MILESTONE 1 — COMPLETE
 
-Completed:
-
 - Android project skeleton
-- Gradle / Android build configuration
-- Android manifest
-- MainActivity
-- RollResult model
 - authoritative pure Kotlin RollResolver
-- six FC-001 through FC-009 reference tests
-- GitHub Actions Android CI
+- resolver reference tests
 - successful testDebugUnitTest
 - successful assembleDebug
 
+
+MILESTONE 2 — COMPLETE
+
+Implemented:
+
+- CastRecord persistent history model
+- file-backed CastHistoryStore
+- newest-first history ordering
+- persistent history across store reopening
+- maximum 100 retained casts
+- deterministic oldest-record removal
+- Clear History behavior
+- automated history storage tests
+
 PROVEN:
 
-The authoritative resolution engine compiles.
+GitHub Actions successfully passes:
 
-All six CaveCode reference vectors pass.
+:app:testDebugUnitTest
+:app:assembleDebug
 
-A FateCaster debug APK can be assembled successfully by CI.
+Resolver rules and local history behavior are both
+implemented and covered by automated tests.
 
 
 NEXT ACTION:
 
-Begin Milestone 2.
+Begin Milestone 3 — CAST screen implementation.
 
-Create the persistent cast-history model,
-then implement local history storage that obeys
-FC-008 and FC-016.
+Build in this order:
+
+1. CAST UI state model
+2. CAST screen ViewModel / state holder
+3. authoritative one-roll CAST action
+4. CAST screen Compose UI
+5. connect completed casts to CastHistoryStore
+6. verify READY / CASTING / RESULT behavior
+7. run CI
 
 
 IMPLEMENTATION RULE:
@@ -1395,6 +1410,23 @@ Android implementation is underway.
 
 Milestone 1 is complete.
 Milestone 2 is next.
+
+IMPLEMENTATION CHECKPOINT:
+
+Milestones 1 and 2 complete.
+
+The authoritative roll engine is implemented and tested.
+
+Persistent local history is implemented and tested.
+
+GitHub Actions successfully passes:
+
+:app:testDebugUnitTest
+:app:assembleDebug
+
+NEXT:
+
+Milestone 3 — CAST screen implementation.
 
 GitHub Actions successfully passed:
 
@@ -1481,13 +1513,12 @@ that an implementation should not need to invent their product behavior.
 
 WHAT IS CURRENTLY NOT BUILT?
 
-Persistent local history storage is not yet implemented.
-
 The CAST screen is not yet implemented.
 
-The HISTORY screen is not yet implemented.
+The HISTORY screen UI is not yet implemented.
 
-CAST → resolver → history integration is not yet implemented.
+CAST → resolver → persistent history integration
+is not yet implemented.
 
 No release bundle exists yet.
 
