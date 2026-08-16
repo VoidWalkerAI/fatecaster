@@ -1244,7 +1244,9 @@ FateCaster
 
 CURRENT STATUS:
 
-Implementation-ready.
+Implementation in progress.
+
+Milestone 1 is complete.
 
 Pre-build readiness review passed.
 
@@ -1389,11 +1391,10 @@ HISTORY screen contract complete.
 
 No unresolved product question prevents implementation.
 
-FateCaster is ready for Android implementation.
+Android implementation is underway.
 
-IMPLEMENTATION CHECKPOINT:
-
-Milestone 1 complete.
+Milestone 1 is complete.
+Milestone 2 is next.
 
 GitHub Actions successfully passed:
 
@@ -1480,7 +1481,13 @@ that an implementation should not need to invent their product behavior.
 
 WHAT IS CURRENTLY NOT BUILT?
 
-No Android implementation exists yet.
+Persistent local history storage is not yet implemented.
+
+The CAST screen is not yet implemented.
+
+The HISTORY screen is not yet implemented.
+
+CAST → resolver → history integration is not yet implemented.
 
 No release bundle exists yet.
 
@@ -1496,16 +1503,24 @@ See BLOCK 20 — OPEN PRODUCT QUESTIONS.
 
 WHAT SHOULD HAPPEN NEXT?
 
-Begin Android implementation.
+Begin Milestone 2 — Local history model / storage.
 
-First implementation milestone:
+First action:
 
-Create the Android project skeleton and pure Kotlin
-authoritative roll resolver.
+Create the persistent CastRecord model.
 
-Use the existing reference test vectors to prove that
-the resolver implements FC-001 through FC-009 correctly
-before connecting it to Compose UI.
+Then implement local storage that:
+
+- preserves the required cast fields
+- stores one timestamp per cast
+- keeps newest casts first
+- retains no more than 100 casts
+- removes the oldest cast when the limit is exceeded
+- supports Clear History
+- survives application restart
+
+Add automated tests for retention and clearing behavior
+before connecting history storage to the Compose UI.
 
 
 WHAT IS THE NEXT HUMAN OR AI MOST LIKELY TO MISUNDERSTAND?
