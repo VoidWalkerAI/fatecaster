@@ -5,10 +5,11 @@ CaveCode Reference Implementation 001
 ============================================================
 
 STATUS:
-Implementation in progress — Milestones 1–3 complete; Milestone 4 in progress
+Implementation in progress — Milestones 1–4 complete in code and physically verified.
+PR / branch-integration verification is the current checkpoint task.
 
 LAST TRUTH CHECKPOINT:
-2026-08-16 — physical Android device proven
+2026-08-19 — FC-016 HISTORY contract physically verified on Android hardware.
 
 PURPOSE OF THIS FILE:
 
@@ -23,9 +24,8 @@ FateCaster is intended to be:
 - the future dice-resolution companion/mechanism for Broken Frontier
 - CaveCode Reference Implementation 001
 
-This file records current truth, settled scope, unresolved questions,
-release constraints, proven implementation state, and the exact point
-where work should resume.
+This file records current truth, settled scope, constraints, proof,
+release state, and the exact point where work should resume.
 
 A human or AI returning to FateCaster cold should read this file first.
 
@@ -54,25 +54,20 @@ Cast a d20, apply a modifier, compare against a target number,
 show the degree of outcome, and preserve recent roll history.
 
 SECONDARY PURPOSE:
-Provide a small, real application that can be taken through
-the complete Android and Google Play Store release lifecycle.
+Take a small real Android application through the full release lifecycle.
 
 BROKEN FRONTIER RELATIONSHIP:
-FateCaster is related to Broken Frontier but must remain usable
-as a standalone application.
-
-Broken Frontier integration is future work.
+FateCaster is related to Broken Frontier but must remain usable as a
+standalone application. Broken Frontier integration is future work.
 FateCaster v1 must not require Broken Frontier to function.
 
 CAVECODE ROLE:
-FateCaster is CaveCode Reference Implementation 001.
+FateCaster is CaveCode Reference Implementation 001 and CaveCode Experiment 001.
 
 
 ============================================================
 🪨 BLOCK 2 — V1 SCOPE CONTRACT
 ============================================================
-
-FateCaster v1 stays deliberately small.
 
 V1 INCLUDES:
 
@@ -81,10 +76,10 @@ V1 INCLUDES:
 - target numbers
 - degree-of-success result
 - natural 1 / natural 20 overrides
-- roll history
+- local roll history
 - two primary screens: CAST and HISTORY
 - standalone local operation
-- Android application packaging
+- Android packaging
 - Google Play Store release work
 
 V1 DOES NOT REQUIRE:
@@ -122,39 +117,7 @@ Do not expand v1 merely because an additional feature would be easy.
 
 
 ============================================================
-🎮 BLOCK 4 — PRIMARY ROLL FLOW
-============================================================
-
-Choose modifier
-    ↓
-Choose target number
-    ↓
-Cast fate
-    ↓
-Generate d20 result
-    ↓
-Calculate final value:
-raw d20 + modifier
-    ↓
-Natural 20?
-    → CRITICAL SUCCESS
-    ↓ otherwise
-Natural 1?
-    → CRITICAL FAILURE
-    ↓ otherwise
-Compare final value to target number
-    ↓
-Determine degree of outcome
-    ↓
-Display result
-    ↓
-Record cast in local history
-
-THIS FLOW IS NOW IMPLEMENTED AND PHYSICALLY PROVEN THROUGH HISTORY WRITE.
-
-
-============================================================
-🎮 BLOCK 5 — SETTLED ROLL DECISIONS
+🎮 BLOCK 4 — SETTLED ROLL DECISIONS
 ============================================================
 
 FC-001 — V1 DICE
@@ -227,7 +190,7 @@ under every modifier.
 
 
 ============================================================
-🌐 BLOCK 6 — PLAYER-FACING LANGUAGE
+🌐 BLOCK 5 — PLAYER-FACING LANGUAGE
 ============================================================
 
 Before resolution:
@@ -238,12 +201,6 @@ After resolution:
 
     Your Fate has been cast: [RESULT]
 
-PRODUCT TONE:
-
-Direct.
-Ritual-like without becoming cumbersome.
-Readable at a glance.
-
 Outcome meaning must always be written explicitly:
 
 - CRITICAL SUCCESS
@@ -251,11 +208,12 @@ Outcome meaning must always be written explicitly:
 - FAILURE
 - CRITICAL FAILURE
 
-Color may reinforce meaning but must not be the only signal.
+Tone:
+Direct. Ritual-like without becoming cumbersome. Readable at a glance.
 
 
 ============================================================
-🎮 BLOCK 7 — LOCAL HISTORY CONTRACT
+🎮 BLOCK 6 — HISTORY CONTRACT
 ============================================================
 
 FC-008 — HISTORY RETENTION
@@ -270,47 +228,81 @@ Minimum stored record:
 - modifier
 - final roll value
 - target number
-- degree-of-success result
+- outcome tier
 - natural override state
 
 Storage principle:
-Local-first.
+Local-first. No account or remote service is required.
 
-No account or remote service is required.
+FC-016 — HISTORY SCREEN CONTRACT
 
-Clear History is part of the settled v1 contract.
-It requires intentional user action and confirmation.
+HISTORY is one vertically scrolling, newest-first list.
+Maximum retained history: 100 casts.
 
-IMPORTANT CURRENT TRUTH:
+Each item is read-only and communicates:
 
-The storage layer already supports clearing history.
-The current HISTORY user interface does NOT yet expose the required
-Clear History action or confirmation dialog.
+- explicit outcome tier
+- NATURAL 1 / NATURAL 20 when applicable
+- raw d20 result
+- modifier
+- calculated final value
+- target number
+- local date/time timestamp
+
+History items are not editable, individually deletable, detail links,
+swipe actions, reroll controls, or long-press menus.
+
+No search.
+No filters.
+No alternate sorting.
+No pagination.
+No manual refresh.
+
+CLEAR HISTORY CONTRACT:
+
+Visible secondary HISTORY action.
+Requires confirmation:
+
+Clear history?
+This will remove all saved casts.
+
+[ Cancel ]     [ Clear ]
+
+Cancel preserves existing history.
+Clear keeps the user on HISTORY and immediately shows the empty state.
+When empty, Clear History remains visible but disabled.
+
+EMPTY STATE CONTRACT:
+
+No casts yet.
+Cast your fate to begin.
+
+CURRENT TRUTH:
+
+FC-016 is implemented and physically verified.
+
+Physical verification includes:
+
+- populated HISTORY list
+- long scrollable history
+- newest-first records
+- timestamps
+- outcome / roll math / TN display
+- NATURAL 1 display
+- NATURAL 20 display
+- visible Clear History action
+- required confirmation dialog
+- Cancel preserves records
+- Clear removes records
+- Clear immediately shows empty state
+- empty state shows both settled lines
+- Clear History is disabled while empty
+- a new cast repopulates HISTORY after clearing
+- CAST ↔ HISTORY navigation remains functional
 
 
 ============================================================
-🪨 BLOCK 8 — LOCAL-FIRST / PRIVACY CONTRACT
-============================================================
-
-FateCaster v1 must not require:
-
-- account creation
-- login
-- cloud database
-- remote API
-- AI service
-- network access for core rolling
-- unnecessary device permissions
-
-PERMISSION PRINCIPLE:
-Request no Android permission unless an implemented feature genuinely requires it.
-
-PRIVACY PRINCIPLE:
-Do not collect data merely because the platform makes collection easy.
-
-
-============================================================
-🎮 BLOCK 9 — SCREEN MODEL
+🎮 BLOCK 7 — CAST SCREEN CONTRACT
 ============================================================
 
 FC-006 — PRIMARY SCREENS
@@ -319,18 +311,16 @@ FC-006 — PRIMARY SCREENS
 2. HISTORY
 
 No third primary screen is required for v1.
-CAST and HISTORY are one tap apart through persistent bottom navigation.
-
 
 FC-015 — CAST SCREEN CONTRACT
 
-The CAST screen uses a single-column layout containing:
+The CAST screen contains:
 
 - FateCaster identity/header
-- large faceted d20 / raw-result area
+- faceted d20 / raw-result area
 - Modifier stepper
 - Target TN stepper
-- large CAST FATE action
+- CAST FATE action
 - completed-result area
 - CAST / HISTORY bottom navigation
 
@@ -338,16 +328,12 @@ Modifier:
 - tap stepper
 - -10 through +10
 - one point per tap
-- no slider
-- no keyboard entry
 - no wraparound
 
 Target TN:
 - tap stepper
 - 1 through 30
 - one point per tap
-- no slider
-- no keyboard entry
 - no wraparound
 
 Fresh launch:
@@ -367,12 +353,12 @@ CASTING
 - CAST FATE disabled
 - navigation temporarily disabled
 - "Awaiting your Fate…" displayed
-- d20 presentation animation runs
+- d20 animation runs
 - exactly one authoritative raw d20 is generated
 
 RESULT
 - d20 shows raw roll
-- final value shown separately
+- final value is shown
 - explicit outcome tier displayed
 - natural override shown when applicable
 - raw/modifier/final math displayed
@@ -393,109 +379,21 @@ Fresh app launch:
 
 Persistent HISTORY is not erased by an ordinary app restart.
 
-CURRENT IMPLEMENTATION TRUTH:
-
-FC-015 is implemented.
-The CAST screen has been exercised successfully on physical Android hardware.
-
-
-FC-016 — HISTORY SCREEN CONTRACT
-
-HISTORY is one vertically scrolling, newest-first list.
-Maximum retained history: 100 casts.
-
-Each item is read-only and should communicate:
-
-- final roll value
-- explicit outcome tier
-- NATURAL 1 / NATURAL 20 when applicable
-- raw d20 result
-- modifier
-- calculated final value
-- target number
-- local date/time timestamp
-
-History items are not:
-
-- editable
-- individually deletable
-- detail-screen links
-- swipe actions
-- reroll controls
-- long-press menus
-
-No search.
-No filters.
-No alternate sorting.
-No pagination.
-No manual refresh.
-
-CLEAR HISTORY CONTRACT:
-
-Visible secondary HISTORY action.
-Requires confirmation:
-
-Clear history?
-This will remove all saved casts.
-
-[ Cancel ]     [ Clear ]
-
-Clear keeps the user on HISTORY and immediately shows the empty state.
-When empty, Clear History remains visible but disabled.
-
-EMPTY STATE CONTRACT:
-
-No casts yet.
-Cast your fate to begin.
-
-CURRENT IMPLEMENTATION TRUTH:
-
-Implemented and physically proven:
-
-- HISTORY destination opens
-- CAST destination returns to CAST
-- newest-first stored records display
-- outcome tier displays
-- raw/modifier/final arithmetic displays
-- TN displays
-- local timestamp displays
-- natural override label is implemented when applicable
-- empty-history state displays "No casts yet."
-- completed casts appear when HISTORY is opened
-
-Still incomplete against FC-016:
-
-- Clear History UI action is missing
-- Clear History confirmation dialog is missing
-- empty-state second line "Cast your fate to begin." is missing
-- final-value presentation may still be refined to match the exact FC-016 hierarchy
-
-Therefore FC-016 is NOT yet fully implemented even though the HISTORY screen
-is already functional and physically proven in its present form.
+CURRENT TRUTH:
+FC-015 is implemented and physically proven.
+Modifier -10 / +10 and TN 1 / 30 boundaries have also been exercised on hardware.
 
 
 ============================================================
-🪨 BLOCK 10 — ANDROID FOUNDATION / RELEASE IDENTITY
+🪨 BLOCK 8 — ANDROID FOUNDATION / PRIVACY / IDENTITY
 ============================================================
 
 FC-010 — ANDROID FOUNDATION
 
-Language:
-Kotlin
-
-UI:
-Jetpack Compose
-
-Application model:
-Single Activity
-
-Architecture:
-Small layered architecture.
-
-UI layer:
-- CAST screen
-- HISTORY screen
-- screen-level state / ViewModel where useful
+Language: Kotlin
+UI: Jetpack Compose
+Application model: Single Activity
+Architecture: small layered architecture
 
 Core resolution:
 - pure Kotlin RollResolver
@@ -509,13 +407,7 @@ Do not add architecture merely for theoretical scalability.
 
 FC-011 — APPLICATION ID
 
-Application ID:
 ai.voidwalker.fatecaster
-
-Android namespace:
-ai.voidwalker.fatecaster
-
-Do not casually change the application ID after publication.
 
 FC-012 — MINIMUM SDK
 
@@ -525,19 +417,25 @@ FC-013 — TARGET SDK
 
 API 36 — Android 16
 
-Target the current Google Play-required API level at release time.
-
 FC-014 — INITIAL VERSION
 
 versionCode: 1
 versionName: 0.1.0
 
-versionCode must increase for every subsequent build uploaded to Google Play.
-Never reuse a versionCode already uploaded to Play.
+VersionCode must increase for each subsequent Google Play upload.
+
+LOCAL-FIRST / PRIVACY:
+
+FateCaster v1 must not require account creation, login, cloud database,
+remote API, AI service, network access for core rolling, or unnecessary
+permissions.
+
+Request no Android permission unless an implemented feature genuinely
+requires it. Do not collect data merely because the platform makes it easy.
 
 
 ============================================================
-🪨 BLOCK 11 — RELEASE CONTRACT
+🪨 BLOCK 9 — RELEASE CONTRACT
 ============================================================
 
 FateCaster is intended to become a real Google Play Store application.
@@ -565,10 +463,10 @@ build → sign → bundle → upload → test → release → update
 
 CURRENT RELEASE TRUTH:
 
-- debug APK builds successfully in GitHub Actions
-- GitHub Actions uploads the debug APK as an artifact
-- APK has been downloaded and installed on physical Android hardware
-- FateCaster launches and operates on physical hardware
+- debug APK builds successfully
+- GitHub Actions produces downloadable debug APK artifacts
+- APKs have been installed on physical Android hardware
+- FateCaster is in active use on a Samsung phone and Samsung tablet
 - no production release signing workflow exists yet
 - no release Android App Bundle has been produced for Play yet
 - no Play Console testing track has been configured
@@ -576,31 +474,10 @@ CURRENT RELEASE TRUTH:
 
 
 ============================================================
-🔧 BLOCK 12 — BROKEN FRONTIER INTEGRATION
+🔧 BLOCK 10 — FUTURE WORK / DO NOT PULL FORWARD
 ============================================================
 
-Broken Frontier integration is FUTURE WORK.
-It is not required for FateCaster v1.
-The standalone application must not depend on Broken Frontier.
-
-Open questions:
-
-- library versus shared module versus service boundary
-- invocation contract
-- result payload
-- whether standalone FateCaster ever receives external roll requests
-- how automatic FateCaster invocation maps to the Android app
-
-Future programmatic/headless resolution may use a different interface
-from the human CAST screen, but it must use the same authoritative
-resolution rules.
-
-Do not solve these during v1 unless v1 actually requires them.
-
-
-============================================================
-🔧 BLOCK 13 — FUTURE FEATURES
-============================================================
+Broken Frontier integration is future work and not required for v1.
 
 Possible later features:
 
@@ -609,19 +486,21 @@ Possible later features:
 - custom dice
 - expanded history tools
 - share / export
-- additional accessibility improvements beyond the v1 baseline
+- additional accessibility improvements
 - Broken Frontier integration
 
 These are possibilities, not promises.
 
+Do not add them merely because implementation would be easy.
+
 
 ============================================================
-🪨 BLOCK 14 — CAVECODE TEST CONTRACT
+🪨 BLOCK 11 — CAVECODE EXPERIMENT
 ============================================================
 
 FateCaster is being built under CaveCode from the beginning.
 
-The test is whether the CaveCode structure remains useful through:
+The test is whether CaveCode remains useful through:
 
 1. design
 2. implementation
@@ -635,19 +514,17 @@ The test is whether the CaveCode structure remains useful through:
 10. later maintenance
 
 SUCCESS DOES NOT MEAN:
-
 "CaveCode built the app."
 
-A more accurate statement is:
-
+A more accurate claim is:
 FateCaster was designed, documented, built, reviewed, handed off,
 packaged, physically tested, released, and maintained using CaveCode
-as its human/AI project protocol.
+as its human/AI project-continuity protocol.
 
 Evidence should come from:
 
 - this map
-- subsystem maps when genuinely needed
+- Current Cards when useful
 - Git commits
 - pull requests
 - CI results
@@ -656,338 +533,156 @@ Evidence should come from:
 - release records
 - later ability to resume and modify the project without lost context
 
-CAVECODE LESSON SO FAR:
+ACCIDENTAL CONTINUITY EVENT:
 
-A map that remains stale after implementation is not doing its job.
-The checkpoint must move when reality moves.
+Active FateCaster development accidentally crossed from one ChatGPT
+conversation into another before the split was noticed.
+
+This does NOT count as a clean cold-handoff test because project context
+was available across the conversation boundary.
+
+It DOES count as real interruption/resumption evidence.
+
+WORKFLOW OBSERVATION — 2026-08-19:
+
+The Milestone 4 completion cycle had unusually low human-side friction.
+The observed loop was:
+
+Human states intent / approves objective
+    ↓
+Connected AI reads repository truth
+    ↓
+AI creates bounded branch and edits repository
+    ↓
+Build artifact becomes available
+    ↓
+Human performs focused physical-device review
+    ↓
+Human reports proof / problems
+    ↓
+AI reconciles project record and prepares integration
+
+The human did not need to manually perform the small GitHub edits that
+previously interrupted the design/review flow.
+
+This is a promising workflow observation, not yet a universal conclusion.
+Future repetitions should determine whether it remains fast, accurate,
+and reviewable as tasks become more complex.
+
+CAVECODE LESSON:
+
+The project record is most useful when it makes the next bounded action
+obvious and keeps settled decisions from being casually reopened.
 
 
 ============================================================
-🔧 BLOCK 15 — OPEN PRODUCT QUESTIONS
-============================================================
-
-RELEASE:
-
-- release signing workflow
-- Play Console testing / release path
-- final Play Store title
-- final Play Store short description
-- final Play Store full description
-
-PRESENTATION:
-
-- final icon / visual identity
-- final color system
-- final typography
-- exact animation timing
-- exact sound behavior, if any
-- exact haptic behavior, if any
-
-OPTIONAL V1 SETTINGS:
-
-- whether sound is included in v1
-- whether haptics are included in v1
-- where any included presentation controls appear
-
-Already settled:
-FC-001 through FC-016.
-
-Do not reopen settled product behavior merely because a different
-implementation would be convenient.
-
-An item remains open until explicitly decided and recorded.
-
-
-============================================================
-🖍️ BLOCK 16 — IMPLEMENTATION MILESTONES
+🖍️ BLOCK 12 — IMPLEMENTATION MILESTONES
 ============================================================
 
 MILESTONE 1 — ANDROID FOUNDATION — COMPLETE
 
-Implemented and tested:
-
 - Android project skeleton
-- Kotlin / Jetpack Compose baseline
+- Kotlin / Compose baseline
 - application identity
-- authoritative pure Kotlin RollResolver
-- resolver reference tests
-- testDebugUnitTest
-- assembleDebug
-
+- authoritative RollResolver
+- resolver tests
+- debug build pipeline
 
 MILESTONE 2 — LOCAL HISTORY DATA LAYER — COMPLETE
-
-Implemented and tested:
 
 - CastRecord model
 - file-backed CastHistoryStore
 - newest-first ordering
-- persistence across store reopening / app restart
+- persistence
 - maximum 100 retained casts
-- deterministic oldest-record removal
-- storage-layer Clear History behavior
+- oldest-record eviction
+- storage-layer clear behavior
 - automated storage tests
 
+MILESTONE 3 — CAST SCREEN — COMPLETE / PHYSICALLY PROVEN
 
-MILESTONE 3 — CAST SCREEN — COMPLETE
+- READY / CASTING / RESULT
+- modifier and TN steppers
+- d20 display / animation
+- FateCaster result language
+- outcome / natural override display
+- history writes
+- navigation
+- real device testing
 
-Implemented:
+MILESTONE 4 — HISTORY SCREEN — COMPLETE / PHYSICALLY PROVEN
 
-- CastUiState
-- CastViewModel
-- authoritative one-roll CAST action
-- READY / CASTING / RESULT states
-- modifier stepper
-- TN stepper
-- faceted d20 display
-- casting animation
-- approved FateCaster language
-- degree-of-success result
-- natural override result display
-- completed cast written to CastHistoryStore
-- CAST/HISTORY bottom navigation control from CAST
-
-Proven:
-
-- GitHub Actions passes tests and assembleDebug
-- debug APK artifact generated
-- APK installed on physical Android hardware
-- actual casts generated and resolved on physical hardware
-- modifier and TN changes exercised on physical hardware
-- outcomes visibly matched the roll math in observed testing
-
-
-MILESTONE 4 — HISTORY SCREEN — IN PROGRESS
-
-Implemented:
-
-- HistoryScreen Compose UI
 - newest-first visible records
 - timestamps
-- roll math and TN display
-- explicit outcome tier
+- roll math / TN / outcome display
 - natural override labels
-- empty-history basic state
-- HISTORY selected state
-- CAST ↔ HISTORY navigation
+- full empty state
+- Clear History action
+- confirmation dialog
+- Cancel path verified
+- Clear path verified
+- immediate empty-state refresh
+- disabled Clear while empty
+- repopulation after a new cast
+- navigation verified
 
-Physically proven:
-
-- fresh history displays empty state
-- casts appear in HISTORY after casting
-- multiple records display newest first
-- returning to CAST works
-- returning to HISTORY works
-
-Still required before Milestone 4 is complete:
-
-1. add visible Clear History action
-2. add confirmation dialog
-3. make Clear update HISTORY immediately
-4. disable Clear History when no records exist
-5. add "Cast your fate to begin." to empty state
-6. verify natural 1 / natural 20 presentation on HISTORY if not yet physically observed
-7. verify the completed FC-016 screen on physical hardware
-8. run CI successfully after the final HISTORY changes
-
-
-MILESTONE 5 — RELEASE PREPARATION — NOT STARTED
+MILESTONE 5 — RELEASE PREPARATION — NEXT
 
 Expected work includes:
 
-- decide release signing workflow
+- establish stable signing strategy
 - create secure release signing arrangement
-- produce release build / Android App Bundle
+- produce release Android App Bundle
 - confirm versioning procedure
 - prepare Play Console testing path
 - prepare store listing / data-safety material
 
-Do not begin Milestone 5 until the v1 implementation contract is satisfied
-or a release-specific requirement becomes necessary to finish it.
+Do not commit signing secrets or private signing material to this public repository.
 
 
 ============================================================
-🖍️ BLOCK 17 — CURRENT WORK / RESUME HERE
+🖍️ BLOCK 13 — CURRENT CARD / RESUME HERE
 ============================================================
+
+DATE:
+2026-08-19
 
 CURRENT PROJECT:
 FateCaster
 
-CURRENT STATUS:
-
-A functional native Android FateCaster is running on physical hardware.
-The complete CAST loop works.
-The HISTORY screen works in a partial but useful form.
-The project has crossed from Android skeleton into functioning application.
-
-SETTLED THROUGH:
-FC-016
-
 CURRENT BRANCH:
-agent/android-implementation
+agent/history-completion
 
-LATEST PROVEN CI BEFORE THIS CAVECODE CHECKPOINT:
+CURRENT TRUTH:
 
-Android CI run #19
-"Wire FateCaster history navigation"
-SUCCESS
+Milestones 1–4 are implemented.
+Milestones 1–4 have been exercised on physical Android hardware.
+FC-016 Clear / Cancel / empty / repopulation behavior is physically verified.
+FateCaster is being used on both phone and tablet.
 
-Proven tasks include:
+CURRENT INTEGRATION STATE:
 
-:app:testDebugUnitTest
-:app:assembleDebug
+History-completion code and this truth checkpoint are on
+agent/history-completion and need final CI / pull-request integration into main.
 
-The CI workflow also uploads the debug APK artifact.
+NEXT ACTION:
 
-CURRENT MILESTONE:
-Milestone 4 — HISTORY screen completion.
+1. Open or refresh the pull request from agent/history-completion to main.
+2. Confirm Android CI passes on the final branch head.
+3. Review and merge the checkpoint.
+4. Begin Milestone 5 release preparation from clean main.
 
-EXACT NEXT ACTION:
+FIRST MILESTONE 5 TECHNICAL PRIORITY:
 
-Finish the remaining FC-016 HISTORY contract, beginning with:
-
-Add a visible Clear History action to HISTORY and wire it to a
-confirmation dialog before calling CastHistoryStore.clear().
-
-Then:
-
-- update displayed records immediately after clear
-- disable Clear History when history is empty
-- add "Cast your fate to begin." to the empty state
-- run CI
-- install the resulting APK on physical hardware
-- verify clear/cancel/empty behavior
+Stabilize signing/build installation behavior before repeated development
+updates are expected to preserve meaningful local history across app updates.
 
 DO NOT:
 
-- add search
-- add filters
-- add individual deletion
-- add accounts
-- add cloud sync
-- add Broken Frontier integration
-- start visual-polish expansion before the settled v1 behavior is complete
-
-IMPLEMENTATION RULE:
-
-Implement settled behavior before presentation polish.
-Do not alter settled product behavior without deliberately reopening
-and recording the affected decision.
-
-
-============================================================
-🖍️ BLOCK 18 — HANDOFF SNAPSHOT
-============================================================
-
-DATE:
-2026-08-16
-
-TIME OF HUMAN TEST CHECKPOINT:
-approximately 7:10 PM local time
-
-CHECKPOINT:
-
-FateCaster has now been:
-
-- compiled as a native Android application
-- tested by GitHub Actions
-- assembled as a debug APK
-- uploaded by CI as a downloadable artifact
-- installed on physical Samsung Android hardware
-- launched successfully
-- used to cast real d20 results
-- used with changed modifier and TN values
-- used to display SUCCESS / FAILURE / CRITICAL SUCCESS outcomes
-- used to write cast records to local history
-- used to open HISTORY
-- used to display multiple saved cast records
-- used to navigate back to CAST
-
-This is the first physical-device proof checkpoint for FateCaster.
-
-WHAT CURRENTLY WORKS?
-
-Core:
-- authoritative d20 resolver
-- modifiers
-- TN comparison
-- degree of success
-- natural override logic
-
-CAST:
-- READY
-- CASTING
-- RESULT
-- animation
-- d20 display
-- modifier controls
-- TN controls
-- CAST FATE
-- result language
-- history write
-
-HISTORY:
-- local stored records
-- newest-first list
-- outcome display
-- math display
-- TN display
-- timestamps
-- basic empty state
-- navigation
-
-Build pipeline:
-- unit tests
-- debug assembly
-- APK artifact upload
-
-Physical hardware:
-- install proven
-- launch proven
-- cast proven
-- history proven
-
-WHAT IS NOT YET COMPLETE?
-
-- Clear History user interface
-- Clear History confirmation
-- full FC-016 empty-state wording
-- final visual identity / icon
-- final typography / color system
-- sound decision
-- haptic decision
-- production release signing
-- release Android App Bundle
-- Play Console testing
-- Play Store listing / release
-- Broken Frontier integration
-
-WHAT SHOULD HAPPEN NEXT?
-
-Complete Milestone 4 by finishing the missing HISTORY contract.
-
-FIRST ACTION:
-Implement Clear History UI + confirmation without changing the settled
-history semantics.
-
-WHAT IS THE NEXT HUMAN OR AI MOST LIKELY TO MISUNDERSTAND?
-
-FateCaster is no longer merely an Android skeleton.
-It is a functioning native Android application proven on physical hardware.
-
-At the same time, it is NOT yet a finished v1 or a Play Store release.
-
-The HISTORY screen exists and works, but FC-016 is not fully implemented
-until Clear History, confirmation, and the remaining empty-state behavior
-are present and verified.
-
-Do not call Milestone 4 complete merely because records are visible.
-
-Do not put authoritative resolution mathematics inside Compose UI code.
-The pure Kotlin resolver remains authoritative.
-
-Do not turn FateCaster into Broken Frontier.
-Broken Frontier integration remains future work.
+- add new product scope during checkpoint integration
+- commit signing secrets
+- start Broken Frontier integration
+- describe FateCaster as Play Store released before it actually is
 
 ============================================================
 END OF CURRENT TRUTH
