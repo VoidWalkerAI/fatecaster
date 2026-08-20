@@ -44,6 +44,68 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
+/*
+============================================================
+CAVECODE INSIDE — CastScreen.kt
+Built against CaveCode Protocol v1.0
+============================================================
+
+🪨 BLOCK 1 — FILE IDENTITY / CAST PRESENTATION
+Purpose:
+- Presents the CAST screen and bottom navigation.
+- Displays the d20, modifier, TN, CAST FATE control, casting state, and result.
+- Converts settled result/state data into player-visible presentation.
+
+This file must not decide authoritative roll outcomes or write history itself.
+
+🖍️ BLOCK 2 — HUMAN EDIT ZONE / TUNING KNOBS
+Safe presentation territory includes visual spacing, sizing, typography, and
+animation feel when the request is explicitly visual.
+
+Current named tuning knob:
+- CAST_ANIMATION_MILLIS = 700L
+  Controls how long the casting presentation waits before completeCast().
+  Changing it changes feel/timing only; it must not change roll mathematics.
+
+Many layout dimensions are still inline Compose dp/sp values. They are
+presentation values, but are not yet centralized as named tuning knobs.
+Physical phone testing is required after layout changes.
+
+🌐 BLOCK 3 — PLAYER-FACING TEXT
+Public wording owned here includes:
+- FATECASTER
+- CAST / HISTORY
+- Modifier
+- Target TN
+- CAST FATE
+- Awaiting your Fate…
+- Your Fate has been cast: ...
+- CRITICAL SUCCESS / SUCCESS / FAILURE / CRITICAL FAILURE
+- NATURAL 20 / NATURAL 1
+- Raw ... / TN ... result wording
+
+Wording can be intentionally revised without changing resolver rules.
+
+🎮 BLOCK 4 — SCREEN BEHAVIOR
+- Observe CastUiState from CastViewModel.
+- While Casting, disable controls/navigation and show casting presentation.
+- After CAST_ANIMATION_MILLIS, request viewModel.completeCast().
+- Render Ready, Casting, and Result states.
+- Route HISTORY navigation through onHistoryClick.
+
+🪨 BLOCK 5 — LOCKED BOUNDARIES
+- Roll mathematics belongs in core/RollResolver.kt.
+- Modifier/TN state transitions and cast orchestration belong in
+  CastViewModel.kt.
+- History persistence belongs in history/CastHistoryStore.kt.
+
+AI EDIT RULE:
+For viewport-fit, spacing, typography, animation, or wording requests, stay
+inside this presentation territory unless there is clear evidence that the
+requested behavior requires a state-flow change. Do not edit RollResolver to
+solve a screen-layout problem.
+*/
+
 private const val CAST_ANIMATION_MILLIS = 700L
 
 @Composable
