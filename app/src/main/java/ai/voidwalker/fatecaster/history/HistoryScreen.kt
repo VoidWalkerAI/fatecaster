@@ -33,6 +33,63 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/*
+============================================================
+CAVECODE INSIDE — HistoryScreen.kt
+Built against CaveCode Protocol v1.0
+============================================================
+
+🪨 BLOCK 1 — FILE IDENTITY / HISTORY PRESENTATION
+Purpose:
+- Displays saved CastRecord entries.
+- Shows the empty HISTORY state.
+- Provides Clear History with confirmation.
+- Owns HISTORY ↔ CAST navigation presentation.
+
+This file presents and requests history actions. It does not define the
+storage schema or authoritative roll rules.
+
+🎮 BLOCK 2 — SCREEN BEHAVIOR
+- Load records from CastHistoryStore when the screen is composed.
+- Keep Clear History disabled while no records exist.
+- Ask for confirmation before clearing.
+- Cancel must preserve records.
+- Clear must call the store, reload, and immediately show empty state.
+- Render newest-first records in the order supplied by the store.
+
+🌐 BLOCK 3 — PLAYER-FACING TEXT
+Public wording owned here includes:
+- CAST HISTORY
+- Clear History
+- Clear history?
+- This will remove all saved casts.
+- Cancel / Clear
+- No casts yet.
+- Cast your fate to begin.
+- CAST / HISTORY navigation labels
+- NATURAL 1 / NATURAL 20 and outcome display labels
+
+Wording may be deliberately revised without changing persistence or roll
+mathematics.
+
+🖍️ BLOCK 4 — HUMAN EDIT ZONE / PRESENTATION TERRITORY
+Typography, spacing, row presentation, and other visual-only choices belong
+in this file. They may be adjusted when the requested change is strictly
+visual, but should still be physically checked on a real phone.
+
+No storage limit or roll threshold is a tuning knob here.
+
+🪨 BLOCK 5 — LOCKED BOUNDARIES
+- History encoding/decoding belongs in CastHistoryStore.kt.
+- Stored record shape belongs in CastRecord.kt.
+- Roll outcome rules belong in core/RollResolver.kt.
+
+AI EDIT RULE:
+For HISTORY layout or wording work, stay in this file unless there is clear
+evidence that state or persistence must change. Do not rewrite storage or
+roll rules to solve a presentation problem.
+*/
+
 @Composable
 fun HistoryScreen(
     historyStore: CastHistoryStore,
