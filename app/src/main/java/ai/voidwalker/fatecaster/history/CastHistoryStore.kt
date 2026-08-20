@@ -4,6 +4,52 @@ import ai.voidwalker.fatecaster.core.NaturalOverride
 import ai.voidwalker.fatecaster.core.OutcomeTier
 import java.io.File
 
+/*
+============================================================
+CAVECODE INSIDE — CastHistoryStore.kt
+Built against CaveCode Protocol v1.0
+============================================================
+
+🪨 BLOCK 1 — FILE IDENTITY / LOCAL PERSISTENCE
+Purpose:
+- Loads saved cast records from the app-private history file.
+- Adds newest records first.
+- Retains no more than 100 records.
+- Clears saved history on explicit request.
+- Encodes and decodes the current tab-separated storage format.
+
+🎮 BLOCK 2 — PERSISTENCE FLOW
+load()    → file text → CastRecord list
+add()     → prepend record → cap at MAX_RECORDS → persist
+clear()   → empty existing history file
+persist() → CastRecord list → file text
+
+🪨 BLOCK 3 — LOCKED STORAGE CONTRACT
+MAX_RECORDS = 100 is the settled FC-008 history limit.
+The encoded field sequence must stay compatible with CastRecord:
+1. timestampMillis
+2. rawRoll
+3. modifier
+4. finalValue
+5. targetNumber
+6. outcome
+7. naturalOverride
+
+Changing this shape can make previously saved history unreadable.
+
+🖍️ BLOCK 4 — HUMAN EDIT ZONE
+None. MAX_RECORDS and the file format are settled behavior, not casual
+configuration knobs.
+
+🌐 BLOCK 5 — PUBLIC TEXT
+None. This file stores data only and must not own HISTORY wording.
+
+AI EDIT RULE:
+Treat persistence/schema changes as high-impact. UI requests such as spacing,
+colors, labels, or layout must not modify this file unless the requested
+behavior actually requires a storage change.
+*/
+
 class CastHistoryStore(
     private val historyFile: File
 ) {
