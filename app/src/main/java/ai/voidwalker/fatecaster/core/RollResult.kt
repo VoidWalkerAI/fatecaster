@@ -5,31 +5,19 @@ package ai.voidwalker.fatecaster.core
 CAVECODE INSIDE — RollResult.kt
 Built against CaveCode Protocol v1.0
 ============================================================
-
-🪨 BLOCK 1 — FILE IDENTITY / RESULT CONTRACT
-Purpose:
-- Defines the authoritative outcome names used by FateCaster.
-- Defines natural-roll override labels.
-- Defines the complete resolved roll payload passed to UI and history.
-
-🪨 BLOCK 2 — LOCKED DATA SHAPE
-OutcomeTier, NaturalOverride, and RollResult are shared contracts.
-Changes can affect resolver logic, CAST presentation, HISTORY persistence,
-and stored-record decoding.
-
-🖍️ BLOCK 3 — HUMAN EDIT ZONE
-None. These names and fields are not presentation tuning knobs.
-
-🌐 BLOCK 4 — PUBLIC TEXT
-None directly. Screens may translate these enum values into player-facing
-labels without changing the enum contract.
-
-AI EDIT RULE:
-Do not rename, remove, or reinterpret result fields during UI-only work.
-Any schema change must be reviewed together with RollResolver,
-CastRecord, CastHistoryStore, and affected tests.
 */
 
+/*
+============================================================
+🪨 BLOCK 1 — RESOLVED ROLL DATA CONTRACT
+============================================================
+Defines the shared result vocabulary and payload used by the
+resolver, CAST screen, history record, and persistence layer.
+
+Do not rename, remove, reorder, or reinterpret these fields as
+part of UI-only work. A schema change can affect several files
+and previously stored history.
+*/
 enum class OutcomeTier {
     CRITICAL_SUCCESS,
     SUCCESS,
