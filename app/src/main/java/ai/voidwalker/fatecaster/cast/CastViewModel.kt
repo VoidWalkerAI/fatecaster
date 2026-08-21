@@ -14,56 +14,18 @@ import kotlin.random.Random
 CAVECODE INSIDE — CastViewModel.kt
 Built against CaveCode Protocol v1.0
 ============================================================
-
-🪨 BLOCK 1 — FILE IDENTITY / CAST ORCHESTRATION
-Purpose:
-- Owns CAST screen state transitions.
-- Owns modifier and TN control updates.
-- Starts and completes a cast.
-- Requests one d20 value.
-- Sends inputs to RollResolver.
-- Converts the resolved result into CastRecord and saves it.
-
-This file coordinates the cast. It does NOT decide the outcome mathematics.
-
-🎮 BLOCK 2 — CAST FLOW
-beginCast()
-    Ready/Result → Casting
-
-completeCast()
-    Casting
-    → roll one d20
-    → RollResolver.resolve(...)
-    → CastRecord.from(...)
-    → CastHistoryStore.add(...)
-    → Result
-
-🪨 BLOCK 3 — SETTLED CONTROL BOUNDS
-- modifier is clamped to -10..+10
-- target number is clamped to 1..30
-- controls do not change while Casting
-These are settled product rules, not presentation tuning knobs.
-
-🔧 BLOCK 4 — TEST / INJECTION SEAMS
-rollD20 and nowMillis are injected so tests can supply deterministic values.
-Do not replace these seams with UI logic or hidden global state.
-
-🖍️ BLOCK 5 — HUMAN EDIT ZONE
-None. This file has no designated casual tuning knobs.
-
-🌐 BLOCK 6 — PUBLIC TEXT
-None. Player-facing wording belongs in CastScreen.kt.
-
-🪨 BLOCK 7 — LOCKED BOUNDARIES
-- Outcome mathematics belongs only in core/RollResolver.kt.
-- Persistence format belongs only in history/CastHistoryStore.kt.
-- CAST layout/animation/copy belongs in cast/CastScreen.kt.
-
-AI EDIT RULE:
-For UI-only requests, treat this file as read-only unless the requested
-interaction genuinely requires a state-flow change.
 */
 
+/*
+============================================================
+🪨 BLOCK 1 — CAST ORCHESTRATOR
+============================================================
+Owns CAST state and coordinates the cast lifecycle.
+
+rollD20 and nowMillis are deliberate test seams.
+Outcome mathematics belongs in RollResolver.kt.
+Persistence format belongs in CastHistoryStore.kt.
+*/
 class CastViewModel(
     private val historyStore: CastHistoryStore,
     private val rollD20: () -> Int = {
@@ -79,6 +41,13 @@ class CastViewModel(
     )
         private set
 
+    /*
+    ============================================================
+    🎮 BLOCK 2 — PLAYER CONTROL INPUTS
+    ============================================================
+    Modifier and target-number step commands enter here.
+    They are ignored while a cast is in progress.
+    */
     fun decreaseModifier() {
         updateControls(
             modifierDelta = -1
@@ -103,6 +72,16 @@ class CastViewModel(
         )
     }
 
+    /*
+    ============================================================
+    🎮 BLOCK 3 — CAST LIFECYCLE
+    ============================================================
+    beginCast moves Ready/Result into Casting.
+
+    completeCast rolls exactly one d20, resolves it through the
+    authoritative RollResolver, writes one history record, and
+    moves the UI into Result.
+    */
     fun beginCast() {
         val current = uiState
 
@@ -143,6 +122,17 @@ class CastViewModel(
         )
     }
 
+    /*
+    ============================================================
+    🪨 BLOCK 4 — SETTLED CONTROL BOUNDS
+    ============================================================
+    Product rules:
+    - modifier: -10 through +10
+    - target number: 1 through 30
+    - neither control changes while Casting
+
+    These are locked rules, not human tuning knobs.
+    */
     private fun updateControls(
         modifierDelta: Int = 0,
         targetDelta: Int = 0
