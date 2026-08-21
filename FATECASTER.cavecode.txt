@@ -9,7 +9,7 @@ Implementation in progress — Milestones 1–4 complete in code and physically 
 CaveCode Inside Pass 1 is active before phone-layout polish and release preparation.
 
 LAST TRUTH CHECKPOINT:
-2026-08-20 — PR #4 merged; source-level CaveCode pass started from clean main.
+2026-08-21 — CaveCode Inside source layout revised to match the established inline reference style; CI passed.
 
 PURPOSE OF THIS FILE:
 
@@ -562,18 +562,28 @@ PROJECT LEVEL:
 FATECASTER.cavecode.txt owns project truth, settled scope, current state,
 release status, proof, and resumption instructions.
 
-SOURCE LEVEL:
-Production Kotlin files should identify their local responsibility and
-boundaries using CaveCode v1.0 BLOCKs and standard glyph meanings.
+SOURCE LEVEL — FATECASTER REFERENCE STYLE:
+Production Kotlin files use CaveCode v1.0 BLOCKS as visible landmarks inside
+the source, following the established reference-example pattern.
 
-The source-level map should make it possible for a human or AI to answer:
-- What does this file own?
-- What is settled / dangerous to alter?
-- What is safe presentation or tuning territory?
-- What player-facing text lives here?
-- What belongs in another file?
+The block heading sits with the code or values it describes. A human or AI
+should be able to search for a block address and land at the relevant part of
+the actual file rather than reading a detached summary and then hunting for it.
 
-GLYPH MEANINGS ARE NORMATIVE:
+When a file has human-tunable values, those values are centralized in a
+🖍️ TUNING KNOBS / HUMAN EDIT ZONE whenever practical. The human should tune
+from that section rather than searching through implementation code.
+
+Player-facing wording may be centralized in a 🌐 PUBLIC TEXT block, matching
+the v1.0 reference-example style.
+
+Do not manufacture empty or irrelevant blocks. A tiny file may need only one
+real block. The number of blocks follows the file's actual structure.
+
+This is the FateCaster reference-implementation style. It does not redefine
+CaveCode v1.0 or modify the CaveCode Protocol repository.
+
+GLYPH MEANINGS REMAIN NORMATIVE:
 🪨 locked / core / foundational
 🖍️ human-safe edit or tuning territory
 🔧 expandable / intentional extension seam
@@ -586,8 +596,8 @@ An AI editing the repository should obey the local CaveCode boundaries and
 make the smallest change required by the human's stated intent.
 
 CURRENT PASS:
-agent/cavecode-inside-pass1 adds source-level CaveCode to all nine current
-production Kotlin source files:
+agent/cavecode-inside-pass1 now applies this inline source style to all nine
+current production Kotlin source files:
 - MainActivity.kt
 - CastScreen.kt
 - CastUiState.kt
@@ -598,8 +608,12 @@ production Kotlin source files:
 - CastRecord.kt
 - HistoryScreen.kt
 
-The pass is intentionally behavior-neutral. The branch comparison against
-main shows comment additions only; no executable lines have been removed.
+CastScreen.kt and HistoryScreen.kt also centralize their deliberately exposed
+human presentation knobs and public text. Existing values were preserved so
+this restructuring is intended to remain behavior-equivalent.
+
+CI run #57 passed tests, debug APK build, and artifact upload on the revised
+branch head before this map reconciliation commit.
 
 
 ============================================================
@@ -650,15 +664,18 @@ MILESTONE 4 — HISTORY SCREEN — COMPLETE / PHYSICALLY PROVEN
 - navigation verified
 
 REFERENCE IMPLEMENTATION PASS — CAVECODE INSIDE — CURRENT
-- add local CaveCode maps to all production Kotlin source files
-- preserve executable behavior
-- verify branch diff contains documentation-only additions
-- run CI
-- review and merge
+- inline CaveCode landmarks throughout production Kotlin source
+- centralized human tuning knobs where the file exposes tunable presentation values
+- centralized player-facing text in the two screen files
+- no empty ceremonial block sets for tiny files
+- preserve runtime behavior while restructuring source readability
+- CI passed after the source restructuring
+- human review still required before merge
 
 PHONE LAYOUT POLISH — NEXT AFTER CAVECODE INSIDE
 - address completed CAST readout requiring scroll on the phone
-- use CastScreen.kt local CaveCode boundaries to keep the change presentation-only
+- use CastScreen.kt BLOCK 2 tuning knobs first
+- preserve RollResolver locked rules
 - physically verify on phone
 
 MILESTONE 5 — RELEASE PREPARATION — AFTER PHONE LAYOUT POLISH
@@ -678,7 +695,7 @@ Do not commit signing secrets or private signing material to this public reposit
 ============================================================
 
 DATE:
-2026-08-20
+2026-08-21
 
 CURRENT PROJECT:
 FateCaster
@@ -692,29 +709,43 @@ CURRENT BRANCH:
 agent/cavecode-inside-pass1
 
 CURRENT WORK:
-CaveCode Inside Pass 1.
-All nine production Kotlin source files now have local CaveCode maps on the
-branch. The change is intended to be documentation-only and behavior-neutral.
+CaveCode Inside Pass 1, revised after human review of the first attempt.
+
+The first attempt placed several CaveCode block descriptions together near
+the top of each Kotlin file. Human review found that this did not match the
+intended map-like source experience demonstrated by the established
+Universal Threshold Monitor example.
+
+The branch has now been revised so CaveCode block headings sit with the code
+they describe, tiny files use only the blocks they actually need, and the two
+screen files expose centralized tuning/public-text areas.
 
 CURRENT PROOF:
-Branch comparison against main reports nine modified Kotlin files with
-additions only and zero deletions.
+- authoritative CaveCode v1.0 specification, block structure, glyph document,
+  and established threshold-monitor example were re-read before revision
+- Android CI run #57 passed tests
+- Android CI run #57 built the debug APK
+- Android CI run #57 uploaded the APK artifact
+- runtime behavior has not yet been physically re-verified on a device after
+  this source restructuring
 
 KNOWN OPEN USABILITY ISSUE:
 The completed CAST result can require vertical scrolling on the phone because
 the current CAST layout is taller than the initial viewport. This is recorded
-but deliberately not changed in the CaveCode Inside pass.
+but deliberately not fixed in the CaveCode Inside pass.
 
 NEXT ACTION:
-1. Confirm Android CI passes on the CaveCode Inside branch head.
-2. Open/review the CaveCode Inside pull request.
-3. Merge only after review.
+1. Review the revised PR #5 source structure.
+2. Confirm the inline blocks now look and navigate like the intended CaveCode style.
+3. If approved, merge PR #5.
 4. Start a fresh phone-layout polish branch from new main.
-5. Fix viewport fit without changing roll mechanics.
-6. Physically verify that result visibility is improved on the phone.
+5. Fix viewport fit through the CastScreen tuning area without changing roll mechanics.
+6. Physically verify the result visibility and ordinary CAST/HISTORY behavior on phone.
 7. Then begin Milestone 5 release preparation.
 
 DO NOT:
+- redesign CaveCode while finishing FateCaster
+- alter CaveCode v1.0 from this repository
 - change roll rules during CaveCode or layout work
 - add new product scope
 - commit signing secrets
