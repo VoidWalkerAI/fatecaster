@@ -136,6 +136,8 @@ private const val TEXT_SUCCESS = "SUCCESS"
 private const val TEXT_FAILURE = "FAILURE"
 private const val TEXT_CRITICAL_FAILURE = "CRITICAL FAILURE"
 private const val TEXT_D20_PLACEHOLDER = "—"
+private const val TEXT_DECREASE = "−"
+private const val TEXT_INCREASE = "+"
 private const val ICON_CAST = "◆"
 private const val ICON_HISTORY = "≡"
 
@@ -371,7 +373,7 @@ private fun StepperRow(
                 contentDescription = decreaseDescription(label)
             }
         ) {
-            Text("−")
+            Text(TEXT_DECREASE)
         }
 
         Text(
@@ -391,7 +393,7 @@ private fun StepperRow(
                 contentDescription = increaseDescription(label)
             }
         ) {
-            Text("+")
+            Text(TEXT_INCREASE)
         }
     }
 }
