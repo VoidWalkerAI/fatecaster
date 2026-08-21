@@ -38,58 +38,92 @@ import java.util.Locale
 CAVECODE INSIDE — HistoryScreen.kt
 Built against CaveCode Protocol v1.0
 ============================================================
-
-🪨 BLOCK 1 — FILE IDENTITY / HISTORY PRESENTATION
-Purpose:
-- Displays saved CastRecord entries.
-- Shows the empty HISTORY state.
-- Provides Clear History with confirmation.
-- Owns HISTORY ↔ CAST navigation presentation.
-
-This file presents and requests history actions. It does not define the
-storage schema or authoritative roll rules.
-
-🎮 BLOCK 2 — SCREEN BEHAVIOR
-- Load records from CastHistoryStore when the screen is composed.
-- Keep Clear History disabled while no records exist.
-- Ask for confirmation before clearing.
-- Cancel must preserve records.
-- Clear must call the store, reload, and immediately show empty state.
-- Render newest-first records in the order supplied by the store.
-
-🌐 BLOCK 3 — PLAYER-FACING TEXT
-Public wording owned here includes:
-- CAST HISTORY
-- Clear History
-- Clear history?
-- This will remove all saved casts.
-- Cancel / Clear
-- No casts yet.
-- Cast your fate to begin.
-- CAST / HISTORY navigation labels
-- NATURAL 1 / NATURAL 20 and outcome display labels
-
-Wording may be deliberately revised without changing persistence or roll
-mathematics.
-
-🖍️ BLOCK 4 — HUMAN EDIT ZONE / PRESENTATION TERRITORY
-Typography, spacing, row presentation, and other visual-only choices belong
-in this file. They may be adjusted when the requested change is strictly
-visual, but should still be physically checked on a real phone.
-
-No storage limit or roll threshold is a tuning knob here.
-
-🪨 BLOCK 5 — LOCKED BOUNDARIES
-- History encoding/decoding belongs in CastHistoryStore.kt.
-- Stored record shape belongs in CastRecord.kt.
-- Roll outcome rules belong in core/RollResolver.kt.
-
-AI EDIT RULE:
-For HISTORY layout or wording work, stay in this file unless there is clear
-evidence that state or persistence must change. Do not rewrite storage or
-roll rules to solve a presentation problem.
 */
 
+/*
+============================================================
+🪨 BLOCK 1 — HISTORY PRESENTATION BOUNDARY
+============================================================
+This file presents stored CastRecord entries and requests history
+actions. It does not define roll mathematics or the storage schema.
+*/
+
+/*
+============================================================
+🖍️ BLOCK 2 — TUNING KNOBS
+============================================================
+Human-facing presentation knobs for this file live here.
+Change these values here instead of hunting through the screen code.
+*/
+private val SCREEN_HORIZONTAL_PADDING = 24.dp
+private val SCREEN_VERTICAL_PADDING = 20.dp
+private val HEADER_BOTTOM_SPACING = 20.dp
+private val EMPTY_STATE_LINE_SPACING = 6.dp
+private val ROW_META_SPACING = 6.dp
+private val ROW_DIVIDER_VERTICAL_PADDING = 14.dp
+private const val TIMESTAMP_PATTERN = "MMM d, h:mm a"
+
+/*
+============================================================
+🌐 BLOCK 3 — PLAYER-FACING TEXT
+============================================================
+Text displayed by HISTORY lives here so wording can be changed
+without searching through the screen behavior.
+*/
+private const val TEXT_HISTORY_TITLE = "CAST HISTORY"
+private const val TEXT_CLEAR_HISTORY = "Clear History"
+private const val TEXT_CLEAR_DIALOG_TITLE = "Clear history?"
+private const val TEXT_CLEAR_DIALOG_MESSAGE = "This will remove all saved casts."
+private const val TEXT_CANCEL = "Cancel"
+private const val TEXT_CLEAR = "Clear"
+private const val TEXT_EMPTY_TITLE = "No casts yet."
+private const val TEXT_EMPTY_SUBTITLE = "Cast your fate to begin."
+private const val TEXT_CAST_TAB = "CAST"
+private const val TEXT_HISTORY_TAB = "HISTORY"
+private const val TEXT_NATURAL_20 = "NATURAL 20"
+private const val TEXT_NATURAL_1 = "NATURAL 1"
+private const val TEXT_CRITICAL_SUCCESS = "CRITICAL SUCCESS"
+private const val TEXT_SUCCESS = "SUCCESS"
+private const val TEXT_FAILURE = "FAILURE"
+private const val TEXT_CRITICAL_FAILURE = "CRITICAL FAILURE"
+private const val ICON_CAST = "◆"
+private const val ICON_HISTORY = "≡"
+
+private fun outcomeName(
+    outcome: OutcomeTier
+): String {
+    return when (outcome) {
+        OutcomeTier.CRITICAL_SUCCESS -> TEXT_CRITICAL_SUCCESS
+        OutcomeTier.SUCCESS -> TEXT_SUCCESS
+        OutcomeTier.FAILURE -> TEXT_FAILURE
+        OutcomeTier.CRITICAL_FAILURE -> TEXT_CRITICAL_FAILURE
+    }
+}
+
+private fun recordMathText(record: CastRecord): String =
+    "Raw ${record.rawRoll} ${formatModifier(record.modifier)} = ${record.finalValue}  •  TN ${record.targetNumber}"
+
+private fun formatModifier(
+    modifier: Int
+): String {
+    return if (modifier >= 0) {
+        "+$modifier"
+    } else {
+        modifier.toString()
+    }
+}
+
+/*
+============================================================
+🎮 BLOCK 4 — HISTORY SCREEN FLOW
+============================================================
+- loads records from CastHistoryStore
+- keeps Clear History disabled when empty
+- requires confirmation before clearing
+- Cancel preserves records
+- Clear removes records and immediately reloads the empty state
+- keeps CAST / HISTORY navigation available
+*/
 @Composable
 fun HistoryScreen(
     historyStore: CastHistoryStore,
@@ -108,10 +142,10 @@ fun HistoryScreen(
                 showClearConfirmation = false
             },
             title = {
-                Text("Clear history?")
+                Text(TEXT_CLEAR_DIALOG_TITLE)
             },
             text = {
-                Text("This will remove all saved casts.")
+                Text(TEXT_CLEAR_DIALOG_MESSAGE)
             },
             dismissButton = {
                 TextButton(
@@ -119,7 +153,7 @@ fun HistoryScreen(
                         showClearConfirmation = false
                     }
                 ) {
-                    Text("Cancel")
+                    Text(TEXT_CANCEL)
                 }
             },
             confirmButton = {
@@ -130,7 +164,7 @@ fun HistoryScreen(
                         showClearConfirmation = false
                     }
                 ) {
-                    Text("Clear")
+                    Text(TEXT_CLEAR)
                 }
             }
         )
@@ -142,15 +176,15 @@ fun HistoryScreen(
                 NavigationBarItem(
                     selected = false,
                     onClick = onCastClick,
-                    icon = { Text("◆") },
-                    label = { Text("CAST") }
+                    icon = { Text(ICON_CAST) },
+                    label = { Text(TEXT_CAST_TAB) }
                 )
 
                 NavigationBarItem(
                     selected = true,
                     onClick = { },
-                    icon = { Text("≡") },
-                    label = { Text("HISTORY") }
+                    icon = { Text(ICON_HISTORY) },
+                    label = { Text(TEXT_HISTORY_TAB) }
                 )
             }
         }
@@ -160,7 +194,10 @@ fun HistoryScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 20.dp),
+                .padding(
+                    horizontal = SCREEN_HORIZONTAL_PADDING,
+                    vertical = SCREEN_VERTICAL_PADDING
+                ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
@@ -169,7 +206,7 @@ fun HistoryScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "CAST HISTORY",
+                    text = TEXT_HISTORY_TITLE,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -180,22 +217,22 @@ fun HistoryScreen(
                         showClearConfirmation = true
                     }
                 ) {
-                    Text("Clear History")
+                    Text(TEXT_CLEAR_HISTORY)
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(HEADER_BOTTOM_SPACING))
 
             if (records.isEmpty()) {
                 Text(
-                    text = "No casts yet.",
+                    text = TEXT_EMPTY_TITLE,
                     style = MaterialTheme.typography.bodyLarge
                 )
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(EMPTY_STATE_LINE_SPACING))
 
                 Text(
-                    text = "Cast your fate to begin.",
+                    text = TEXT_EMPTY_SUBTITLE,
                     style = MaterialTheme.typography.bodyMedium
                 )
             } else {
@@ -204,7 +241,9 @@ fun HistoryScreen(
 
                     if (index != records.lastIndex) {
                         HorizontalDivider(
-                            modifier = Modifier.padding(vertical = 14.dp)
+                            modifier = Modifier.padding(
+                                vertical = ROW_DIVIDER_VERTICAL_PADDING
+                            )
                         )
                     }
                 }
@@ -213,6 +252,13 @@ fun HistoryScreen(
     }
 }
 
+/*
+============================================================
+🎮 BLOCK 5 — HISTORY ROW PRESENTATION
+============================================================
+Displays one read-only CastRecord.
+Spacing is tuned in BLOCK 2 and wording is centralized in BLOCK 3.
+*/
 @Composable
 private fun CastHistoryRow(
     record: CastRecord
@@ -237,23 +283,23 @@ private fun CastHistoryRow(
             )
         }
 
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(ROW_META_SPACING))
 
         Text(
-            text = "Raw ${record.rawRoll} ${formatModifier(record.modifier)} = ${record.finalValue}  •  TN ${record.targetNumber}",
+            text = recordMathText(record),
             style = MaterialTheme.typography.bodyLarge
         )
 
         when (record.naturalOverride) {
             NaturalOverride.NATURAL_20 ->
                 Text(
-                    text = "NATURAL 20",
+                    text = TEXT_NATURAL_20,
                     fontWeight = FontWeight.Bold
                 )
 
             NaturalOverride.NATURAL_1 ->
                 Text(
-                    text = "NATURAL 1",
+                    text = TEXT_NATURAL_1,
                     fontWeight = FontWeight.Bold
                 )
 
@@ -262,32 +308,18 @@ private fun CastHistoryRow(
     }
 }
 
-private fun outcomeName(
-    outcome: OutcomeTier
-): String {
-    return when (outcome) {
-        OutcomeTier.CRITICAL_SUCCESS -> "CRITICAL SUCCESS"
-        OutcomeTier.SUCCESS -> "SUCCESS"
-        OutcomeTier.FAILURE -> "FAILURE"
-        OutcomeTier.CRITICAL_FAILURE -> "CRITICAL FAILURE"
-    }
-}
-
-private fun formatModifier(
-    modifier: Int
-): String {
-    return if (modifier >= 0) {
-        "+$modifier"
-    } else {
-        modifier.toString()
-    }
-}
-
+/*
+============================================================
+🎮 BLOCK 6 — TIMESTAMP FORMATTER
+============================================================
+Converts stored epoch time into the local display timestamp.
+The human-editable timestamp pattern is in BLOCK 2.
+*/
 private fun formatTimestamp(
     timestampMillis: Long
 ): String {
     val formatter = SimpleDateFormat(
-        "MMM d, h:mm a",
+        TIMESTAMP_PATTERN,
         Locale.getDefault()
     )
 
