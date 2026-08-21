@@ -20,43 +20,18 @@ import java.io.File
 CAVECODE INSIDE — MainActivity.kt
 Built against CaveCode Protocol v1.0
 ============================================================
-
-🪨 BLOCK 1 — FILE IDENTITY / APPLICATION SHELL
-Purpose:
-- Starts FateCaster.
-- Creates the local CastHistoryStore and CastViewModel.
-- Owns the top-level CAST ↔ HISTORY destination switch.
-
-This file wires existing parts together. It does NOT own roll mathematics,
-history encoding, or screen-specific presentation rules.
-
-🎮 BLOCK 2 — APPLICATION FLOW
-The app currently has two destinations only:
-- CAST
-- HISTORY
-
-Navigation changes which screen is visible. It must not alter roll results
-or stored history.
-
-🖍️ BLOCK 3 — HUMAN EDIT ZONE
-No ordinary tuning knobs live in this file right now.
-Do not move product rules here just to make them easier to edit.
-
-🌐 BLOCK 4 — PUBLIC TEXT
-No player-facing copy is intentionally owned here. Public wording belongs
-with the screen that displays it.
-
-🪨 BLOCK 5 — LOCKED BOUNDARIES
-- Roll resolution belongs in core/RollResolver.kt.
-- Cast state/orchestration belongs in cast/CastViewModel.kt.
-- History persistence belongs in history/CastHistoryStore.kt.
-- CAST and HISTORY presentation belong in their screen files.
-
-AI EDIT RULE:
-For wiring/navigation tasks, edit only the smallest required section.
-Do not rewrite downstream product rules while changing app-shell behavior.
 */
 
+/*
+============================================================
+🪨 BLOCK 1 — APPLICATION SHELL
+============================================================
+Starts FateCaster and wires together the local history store,
+CastViewModel, and Compose application.
+
+This is app-shell wiring. Roll rules, persistence format, and
+screen presentation live in their own files.
+*/
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,6 +54,14 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/*
+============================================================
+🎮 BLOCK 2 — APP NAVIGATION
+============================================================
+FateCaster v1 has two destinations: CAST and HISTORY.
+This block switches between them without changing roll results
+or stored history.
+*/
 private enum class FateCasterDestination {
     CAST,
     HISTORY
