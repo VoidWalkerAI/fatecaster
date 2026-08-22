@@ -4,15 +4,45 @@ import ai.voidwalker.fatecaster.core.NaturalOverride
 import ai.voidwalker.fatecaster.core.OutcomeTier
 import java.io.File
 
+/*
+============================================================
+CAVECODE INSIDE — CastHistoryStore.kt
+Built against CaveCode Protocol v1.0
+============================================================
+*/
+
+/*
+============================================================
+🪨 BLOCK 1 — LOCAL HISTORY STORE
+============================================================
+Owns FateCaster's app-private, file-backed history.
+UI wording and roll mathematics do not belong here.
+*/
 class CastHistoryStore(
     private val historyFile: File
 ) {
 
+    /*
+    ============================================================
+    🪨 BLOCK 2 — LOCKED STORAGE CONTRACT
+    ============================================================
+    FC-008 retains the newest 100 casts.
+    The field separator is part of the current on-disk format.
+    These values are not human tuning knobs.
+    */
     companion object {
         const val MAX_RECORDS = 100
         private const val FIELD_SEPARATOR = "\t"
     }
 
+    /*
+    ============================================================
+    🎮 BLOCK 3 — HISTORY OPERATIONS
+    ============================================================
+    load  = read newest-first records
+    add   = prepend one record, cap to MAX_RECORDS, persist
+    clear = remove retained history contents
+    */
     fun load(): List<CastRecord> {
         if (!historyFile.exists()) {
             return emptyList()
@@ -40,6 +70,21 @@ class CastHistoryStore(
         }
     }
 
+    /*
+    ============================================================
+    🪨 BLOCK 4 — LOCKED STORAGE FORMAT
+    ============================================================
+    Persisted field order:
+    1. timestampMillis
+    2. rawRoll
+    3. modifier
+    4. finalValue
+    5. targetNumber
+    6. outcome
+    7. naturalOverride
+
+    Changing this shape can make existing saved history unreadable.
+    */
     private fun persist(records: List<CastRecord>) {
         historyFile.parentFile?.mkdirs()
 

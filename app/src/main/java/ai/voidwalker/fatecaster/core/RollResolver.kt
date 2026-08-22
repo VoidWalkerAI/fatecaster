@@ -1,5 +1,35 @@
 package ai.voidwalker.fatecaster.core
 
+/*
+============================================================
+CAVECODE INSIDE — RollResolver.kt
+Built against CaveCode Protocol v1.0
+============================================================
+*/
+
+/*
+============================================================
+🪨 BLOCK 1 — AUTHORITATIVE ROLL RULES
+============================================================
+This block is the FateCaster resolution engine.
+Treat it as read-only unless the human explicitly requests a
+rules change.
+
+Settled contract:
+- rawRoll: 1 through 20
+- modifier: -10 through +10
+- targetNumber: 1 through 30
+- finalValue = rawRoll + modifier
+- natural 20 = CRITICAL SUCCESS
+- natural 1 = CRITICAL FAILURE
+- final >= TN + 10 = CRITICAL SUCCESS
+- final >= TN = SUCCESS
+- final <= TN - 10 = CRITICAL FAILURE
+- otherwise = FAILURE
+
+Layout, wording, animation, navigation, and other presentation
+work must not change this block.
+*/
 object RollResolver {
 
     fun resolve(

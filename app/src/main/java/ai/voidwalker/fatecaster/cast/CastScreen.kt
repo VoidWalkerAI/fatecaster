@@ -44,8 +44,160 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
-private const val CAST_ANIMATION_MILLIS = 700L
+/*
+============================================================
+CAVECODE INSIDE — CastScreen.kt
+Built against CaveCode Protocol v1.0
+============================================================
+*/
 
+/*
+============================================================
+🪨 BLOCK 1 — CAST PRESENTATION BOUNDARY
+============================================================
+This file owns the CAST screen presentation.
+
+It may display state supplied by CastViewModel, but it must not
+invent authoritative roll outcomes or write history directly.
+Roll mathematics belongs in core/RollResolver.kt.
+*/
+
+/*
+============================================================
+🖍️ BLOCK 2 — TUNING KNOBS
+============================================================
+Human-facing presentation knobs for this file live here.
+Change these values here instead of hunting through the screen code.
+Physical phone testing is required after layout changes.
+*/
+
+// Casting feel
+private const val CAST_ANIMATION_MILLIS = 700L
+private const val D20_ROTATION_MILLIS = 650
+private const val D20_ROTATION_DEGREES = 360f
+
+// Main screen spacing and controls
+private val SCREEN_HORIZONTAL_PADDING = 24.dp
+private val SCREEN_VERTICAL_PADDING = 20.dp
+private val HEADER_TO_D20_SPACING = 24.dp
+private val D20_TO_MODIFIER_SPACING = 28.dp
+private val CONTROL_ROW_SPACING = 12.dp
+private val CONTROLS_TO_CAST_BUTTON_SPACING = 24.dp
+private val CAST_BUTTON_HEIGHT = 56.dp
+private val CAST_BUTTON_TO_RESULT_SPACING = 28.dp
+private val RESULT_BOTTOM_SPACING = 24.dp
+private val STEPPER_VALUE_HORIZONTAL_PADDING = 16.dp
+private const val STEPPER_LABEL_WEIGHT = 1f
+
+// D20 size and line work
+private val D20_SIZE = 220.dp
+private val D20_NUMBER_SIZE = 52.sp
+private const val D20_OUTLINE_STROKE_WIDTH = 6f
+private const val D20_FACET_STROKE_WIDTH = 3f
+
+// D20 shape points, expressed as fractions of the drawing area
+private const val D20_TOP_X = 0.50f
+private const val D20_TOP_Y = 0.03f
+private const val D20_UPPER_RIGHT_X = 0.93f
+private const val D20_UPPER_RIGHT_Y = 0.30f
+private const val D20_LOWER_RIGHT_X = 0.80f
+private const val D20_LOWER_RIGHT_Y = 0.82f
+private const val D20_BOTTOM_X = 0.50f
+private const val D20_BOTTOM_Y = 0.97f
+private const val D20_LOWER_LEFT_X = 0.20f
+private const val D20_LOWER_LEFT_Y = 0.82f
+private const val D20_UPPER_LEFT_X = 0.07f
+private const val D20_UPPER_LEFT_Y = 0.30f
+private const val D20_CENTER_X = 0.50f
+private const val D20_CENTER_Y = 0.52f
+
+// Result area
+private val RESULT_AREA_HEIGHT = 132.dp
+private val RESULT_ITEM_SPACING = 12.dp
+
+/*
+============================================================
+🌐 BLOCK 3 — PLAYER-FACING TEXT
+============================================================
+Text and accessibility wording displayed or spoken by this screen
+lives here so it can be changed without searching the UI logic.
+*/
+private const val TEXT_APP_TITLE = "FATECASTER"
+private const val TEXT_CAST_TAB = "CAST"
+private const val TEXT_HISTORY_TAB = "HISTORY"
+private const val TEXT_MODIFIER = "Modifier"
+private const val TEXT_TARGET_TN = "Target TN"
+private const val TEXT_CAST_FATE = "CAST FATE"
+private const val TEXT_AWAITING_FATE = "Awaiting your Fate…"
+private const val TEXT_NATURAL_20 = "NATURAL 20"
+private const val TEXT_NATURAL_1 = "NATURAL 1"
+private const val TEXT_CRITICAL_SUCCESS = "CRITICAL SUCCESS"
+private const val TEXT_SUCCESS = "SUCCESS"
+private const val TEXT_FAILURE = "FAILURE"
+private const val TEXT_CRITICAL_FAILURE = "CRITICAL FAILURE"
+private const val TEXT_D20_PLACEHOLDER = "—"
+private const val TEXT_DECREASE = "−"
+private const val TEXT_INCREASE = "+"
+private const val ICON_CAST = "◆"
+private const val ICON_HISTORY = "≡"
+
+private fun castResultText(finalValue: Int): String =
+    "Your Fate has been cast: $finalValue"
+
+private fun rawMathText(
+    rawRoll: Int,
+    modifier: Int,
+    finalValue: Int
+): String =
+    "Raw $rawRoll ${formatModifier(modifier)} = $finalValue"
+
+private fun targetText(targetNumber: Int): String =
+    "TN $targetNumber"
+
+private fun decreaseDescription(label: String): String =
+    "Decrease $label"
+
+private fun increaseDescription(label: String): String =
+    "Increase $label"
+
+private fun d20ContentDescription(rawRoll: Int?): String =
+    if (rawRoll == null) {
+        "D20 awaiting cast"
+    } else {
+        "Raw d20 result $rawRoll"
+    }
+
+private fun OutcomeTier.displayName(): String {
+    return when (this) {
+        OutcomeTier.CRITICAL_SUCCESS -> TEXT_CRITICAL_SUCCESS
+        OutcomeTier.SUCCESS -> TEXT_SUCCESS
+        OutcomeTier.FAILURE -> TEXT_FAILURE
+        OutcomeTier.CRITICAL_FAILURE -> TEXT_CRITICAL_FAILURE
+    }
+}
+
+private fun formatModifier(
+    modifier: Int
+): String {
+    return if (modifier >= 0) {
+        "+$modifier"
+    } else {
+        modifier.toString()
+    }
+}
+
+/*
+============================================================
+🎮 BLOCK 4 — CAST SCREEN FLOW
+============================================================
+Main CAST screen orchestration.
+
+- observes CastUiState
+- freezes navigation and controls while Casting
+- waits CAST_ANIMATION_MILLIS before completeCast()
+- renders Ready, Casting, and Result presentation
+- routes HISTORY navigation through onHistoryClick
+*/
 @Composable
 fun CastScreen(
     viewModel: CastViewModel,
@@ -69,10 +221,10 @@ fun CastScreen(
                     onClick = { },
                     enabled = !isCasting,
                     icon = {
-                        Text("◆")
+                        Text(ICON_CAST)
                     },
                     label = {
-                        Text("CAST")
+                        Text(TEXT_CAST_TAB)
                     }
                 )
 
@@ -81,10 +233,10 @@ fun CastScreen(
                     onClick = onHistoryClick,
                     enabled = !isCasting,
                     icon = {
-                        Text("≡")
+                        Text(ICON_HISTORY)
                     },
                     label = {
-                        Text("HISTORY")
+                        Text(TEXT_HISTORY_TAB)
                     }
                 )
             }
@@ -96,18 +248,21 @@ fun CastScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 20.dp),
+                .padding(
+                    horizontal = SCREEN_HORIZONTAL_PADDING,
+                    vertical = SCREEN_VERTICAL_PADDING
+                ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Text(
-                text = "FATECASTER",
+                text = TEXT_APP_TITLE,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
 
             Spacer(
-                modifier = Modifier.height(24.dp)
+                modifier = Modifier.height(HEADER_TO_D20_SPACING)
             )
 
             D20Display(
@@ -122,11 +277,11 @@ fun CastScreen(
             )
 
             Spacer(
-                modifier = Modifier.height(28.dp)
+                modifier = Modifier.height(D20_TO_MODIFIER_SPACING)
             )
 
             StepperRow(
-                label = "Modifier",
+                label = TEXT_MODIFIER,
                 value = formatModifier(state.modifier),
                 decreaseEnabled =
                     !isCasting && state.modifier > -10,
@@ -137,11 +292,11 @@ fun CastScreen(
             )
 
             Spacer(
-                modifier = Modifier.height(12.dp)
+                modifier = Modifier.height(CONTROL_ROW_SPACING)
             )
 
             StepperRow(
-                label = "Target TN",
+                label = TEXT_TARGET_TN,
                 value = state.targetNumber.toString(),
                 decreaseEnabled =
                     !isCasting && state.targetNumber > 1,
@@ -152,7 +307,7 @@ fun CastScreen(
             )
 
             Spacer(
-                modifier = Modifier.height(24.dp)
+                modifier = Modifier.height(CONTROLS_TO_CAST_BUTTON_SPACING)
             )
 
             Button(
@@ -160,16 +315,16 @@ fun CastScreen(
                 enabled = !isCasting,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .height(CAST_BUTTON_HEIGHT)
             ) {
                 Text(
-                    text = "CAST FATE",
+                    text = TEXT_CAST_FATE,
                     fontWeight = FontWeight.Bold
                 )
             }
 
             Spacer(
-                modifier = Modifier.height(28.dp)
+                modifier = Modifier.height(CAST_BUTTON_TO_RESULT_SPACING)
             )
 
             ResultArea(
@@ -177,12 +332,19 @@ fun CastScreen(
             )
 
             Spacer(
-                modifier = Modifier.height(24.dp)
+                modifier = Modifier.height(RESULT_BOTTOM_SPACING)
             )
         }
     }
 }
 
+/*
+============================================================
+🎮 BLOCK 5 — STEPPER CONTROL PRESENTATION
+============================================================
+Draws the reusable Modifier / Target TN control row.
+Human-adjustable spacing for this control is kept in BLOCK 2.
+*/
 @Composable
 private fun StepperRow(
     label: String,
@@ -201,17 +363,17 @@ private fun StepperRow(
         Text(
             text = label,
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(STEPPER_LABEL_WEIGHT)
         )
 
         FilledTonalButton(
             onClick = onDecrease,
             enabled = decreaseEnabled,
             modifier = Modifier.semantics {
-                contentDescription = "Decrease $label"
+                contentDescription = decreaseDescription(label)
             }
         ) {
-            Text("−")
+            Text(TEXT_DECREASE)
         }
 
         Text(
@@ -219,21 +381,31 @@ private fun StepperRow(
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(
+                horizontal = STEPPER_VALUE_HORIZONTAL_PADDING
+            )
         )
 
         FilledTonalButton(
             onClick = onIncrease,
             enabled = increaseEnabled,
             modifier = Modifier.semantics {
-                contentDescription = "Increase $label"
+                contentDescription = increaseDescription(label)
             }
         ) {
-            Text("+")
+            Text(TEXT_INCREASE)
         }
     }
 }
 
+/*
+============================================================
+🎮 BLOCK 6 — D20 PRESENTATION
+============================================================
+Draws and animates the faceted d20.
+Human-adjustable size, timing, line widths, and shape points
+are centralized in BLOCK 2.
+*/
 @Composable
 private fun D20Display(
     rawRoll: Int?,
@@ -252,10 +424,10 @@ private fun D20Display(
 
     val rotation by transition.animateFloat(
         initialValue = 0f,
-        targetValue = if (isCasting) 360f else 0f,
+        targetValue = if (isCasting) D20_ROTATION_DEGREES else 0f,
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = 650,
+                durationMillis = D20_ROTATION_MILLIS,
                 easing = LinearEasing
             )
         ),
@@ -263,18 +435,13 @@ private fun D20Display(
     )
 
     val displayText =
-        rawRoll?.toString() ?: "—"
+        rawRoll?.toString() ?: TEXT_D20_PLACEHOLDER
 
     Box(
         modifier = Modifier
-            .size(220.dp)
+            .size(D20_SIZE)
             .semantics {
-                contentDescription =
-                    if (rawRoll == null) {
-                        "D20 awaiting cast"
-                    } else {
-                        "Raw d20 result $rawRoll"
-                    }
+                contentDescription = d20ContentDescription(rawRoll)
             },
         contentAlignment = Alignment.Center
     ) {
@@ -290,25 +457,25 @@ private fun D20Display(
             val h = size.height
 
             val top =
-                Offset(w * 0.50f, h * 0.03f)
+                Offset(w * D20_TOP_X, h * D20_TOP_Y)
 
             val upperRight =
-                Offset(w * 0.93f, h * 0.30f)
+                Offset(w * D20_UPPER_RIGHT_X, h * D20_UPPER_RIGHT_Y)
 
             val lowerRight =
-                Offset(w * 0.80f, h * 0.82f)
+                Offset(w * D20_LOWER_RIGHT_X, h * D20_LOWER_RIGHT_Y)
 
             val bottom =
-                Offset(w * 0.50f, h * 0.97f)
+                Offset(w * D20_BOTTOM_X, h * D20_BOTTOM_Y)
 
             val lowerLeft =
-                Offset(w * 0.20f, h * 0.82f)
+                Offset(w * D20_LOWER_LEFT_X, h * D20_LOWER_LEFT_Y)
 
             val upperLeft =
-                Offset(w * 0.07f, h * 0.30f)
+                Offset(w * D20_UPPER_LEFT_X, h * D20_UPPER_LEFT_Y)
 
             val center =
-                Offset(w * 0.50f, h * 0.52f)
+                Offset(w * D20_CENTER_X, h * D20_CENTER_Y)
 
             val outline = Path().apply {
                 moveTo(top.x, top.y)
@@ -323,7 +490,7 @@ private fun D20Display(
             drawPath(
                 path = outline,
                 color = outlineColor,
-                style = Stroke(width = 6f)
+                style = Stroke(width = D20_OUTLINE_STROKE_WIDTH)
             )
 
             listOf(
@@ -338,7 +505,7 @@ private fun D20Display(
                     color = facetColor,
                     start = center,
                     end = point,
-                    strokeWidth = 3f
+                    strokeWidth = D20_FACET_STROKE_WIDTH
                 )
             }
 
@@ -346,25 +513,33 @@ private fun D20Display(
                 color = facetColor,
                 start = upperLeft,
                 end = lowerRight,
-                strokeWidth = 3f
+                strokeWidth = D20_FACET_STROKE_WIDTH
             )
 
             drawLine(
                 color = facetColor,
                 start = upperRight,
                 end = lowerLeft,
-                strokeWidth = 3f
+                strokeWidth = D20_FACET_STROKE_WIDTH
             )
         }
 
         Text(
             text = displayText,
-            fontSize = 52.sp,
+            fontSize = D20_NUMBER_SIZE,
             fontWeight = FontWeight.Bold
         )
     }
 }
 
+/*
+============================================================
+🎮 BLOCK 7 — RESULT PRESENTATION
+============================================================
+Displays Ready, Casting, and completed-result states.
+Result-area dimensions are tuned in BLOCK 2.
+Player-facing wording is centralized in BLOCK 3.
+*/
 @Composable
 private fun ResultArea(
     state: CastUiState
@@ -373,7 +548,7 @@ private fun ResultArea(
 
         is CastUiState.Ready -> {
             Spacer(
-                modifier = Modifier.height(132.dp)
+                modifier = Modifier.height(RESULT_AREA_HEIGHT)
             )
         }
 
@@ -381,11 +556,11 @@ private fun ResultArea(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(132.dp),
+                    .height(RESULT_AREA_HEIGHT),
                 contentAlignment = Alignment.TopCenter
             ) {
                 Text(
-                    text = "Awaiting your Fate…",
+                    text = TEXT_AWAITING_FATE,
                     style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center
                 )
@@ -401,14 +576,13 @@ private fun ResultArea(
             ) {
 
                 Text(
-                    text =
-                        "Your Fate has been cast: ${result.finalValue}",
+                    text = castResultText(result.finalValue),
                     style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center
                 )
 
                 Spacer(
-                    modifier = Modifier.height(12.dp)
+                    modifier = Modifier.height(RESULT_ITEM_SPACING)
                 )
 
                 Text(
@@ -422,7 +596,7 @@ private fun ResultArea(
 
                     NaturalOverride.NATURAL_20 -> {
                         Text(
-                            text = "NATURAL 20",
+                            text = TEXT_NATURAL_20,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -430,7 +604,7 @@ private fun ResultArea(
 
                     NaturalOverride.NATURAL_1 -> {
                         Text(
-                            text = "NATURAL 1",
+                            text = TEXT_NATURAL_1,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -440,48 +614,23 @@ private fun ResultArea(
                 }
 
                 Spacer(
-                    modifier = Modifier.height(12.dp)
+                    modifier = Modifier.height(RESULT_ITEM_SPACING)
                 )
 
                 Text(
-                    text =
-                        "Raw ${result.rawRoll} " +
-                        "${formatModifier(result.modifier)} " +
-                        "= ${result.finalValue}",
+                    text = rawMathText(
+                        rawRoll = result.rawRoll,
+                        modifier = result.modifier,
+                        finalValue = result.finalValue
+                    ),
                     style = MaterialTheme.typography.bodyLarge
                 )
 
                 Text(
-                    text = "TN ${result.targetNumber}",
+                    text = targetText(result.targetNumber),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
         }
-    }
-}
-
-private fun OutcomeTier.displayName(): String {
-    return when (this) {
-        OutcomeTier.CRITICAL_SUCCESS ->
-            "CRITICAL SUCCESS"
-
-        OutcomeTier.SUCCESS ->
-            "SUCCESS"
-
-        OutcomeTier.FAILURE ->
-            "FAILURE"
-
-        OutcomeTier.CRITICAL_FAILURE ->
-            "CRITICAL FAILURE"
-    }
-}
-
-private fun formatModifier(
-    modifier: Int
-): String {
-    return if (modifier >= 0) {
-        "+$modifier"
-    } else {
-        modifier.toString()
     }
 }

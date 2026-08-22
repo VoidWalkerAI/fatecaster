@@ -15,6 +15,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import java.io.File
 
+/*
+============================================================
+CAVECODE INSIDE — MainActivity.kt
+Built against CaveCode Protocol v1.0
+============================================================
+*/
+
+/*
+============================================================
+🪨 BLOCK 1 — APPLICATION SHELL
+============================================================
+Starts FateCaster and wires together the local history store,
+CastViewModel, and Compose application.
+
+This is app-shell wiring. Roll rules, persistence format, and
+screen presentation live in their own files.
+*/
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +54,14 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/*
+============================================================
+🎮 BLOCK 2 — APP NAVIGATION
+============================================================
+FateCaster v1 has two destinations: CAST and HISTORY.
+This block switches between them without changing roll results
+or stored history.
+*/
 private enum class FateCasterDestination {
     CAST,
     HISTORY

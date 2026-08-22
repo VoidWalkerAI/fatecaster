@@ -6,17 +6,16 @@ CaveCode Reference Implementation 001
 
 STATUS:
 Implementation in progress — Milestones 1–4 complete in code and physically verified.
-PR / branch-integration verification is the current checkpoint task.
+CaveCode Inside Pass 1 is active before phone-layout polish and release preparation.
 
 LAST TRUTH CHECKPOINT:
-2026-08-19 — FC-016 HISTORY contract physically verified on Android hardware.
+2026-08-21 — CaveCode Inside source layout revised to match the established inline reference style; CI passed.
 
 PURPOSE OF THIS FILE:
 
 This is the read-first project map for FateCaster.
 
 FateCaster is intended to be:
-
 - a small standalone Android application
 - a real Google Play Store release
 - a practical learning vehicle for Android release workflow
@@ -62,7 +61,9 @@ standalone application. Broken Frontier integration is future work.
 FateCaster v1 must not require Broken Frontier to function.
 
 CAVECODE ROLE:
-FateCaster is CaveCode Reference Implementation 001 and CaveCode Experiment 001.
+FateCaster is CaveCode Reference Implementation 001.
+It is also being used to evaluate CaveCode through real implementation,
+revision, testing, interruption, release preparation, and maintenance.
 
 
 ============================================================
@@ -70,7 +71,6 @@ FateCaster is CaveCode Reference Implementation 001 and CaveCode Experiment 001.
 ============================================================
 
 V1 INCLUDES:
-
 - d20 rolling
 - numeric modifiers
 - target numbers
@@ -83,7 +83,6 @@ V1 INCLUDES:
 - Google Play Store release work
 
 V1 DOES NOT REQUIRE:
-
 - user accounts
 - backend services
 - cloud synchronization
@@ -165,7 +164,6 @@ The modifier-adjusted final value is still calculated and preserved.
 FC-007 — NATURAL OVERRIDE DISPLAY CONTRACT
 
 Every cast preserves:
-
 - raw d20 result
 - modifier
 - calculated final value
@@ -194,15 +192,12 @@ under every modifier.
 ============================================================
 
 Before resolution:
-
     Awaiting your Fate…
 
 After resolution:
-
     Your Fate has been cast: [RESULT]
 
 Outcome meaning must always be written explicitly:
-
 - CRITICAL SUCCESS
 - SUCCESS
 - FAILURE
@@ -222,7 +217,6 @@ FateCaster v1 retains the most recent 100 casts.
 When cast 101 is created, the oldest retained cast is removed.
 
 Minimum stored record:
-
 - timestamp
 - raw d20 result
 - modifier
@@ -240,7 +234,6 @@ HISTORY is one vertically scrolling, newest-first list.
 Maximum retained history: 100 casts.
 
 Each item is read-only and communicates:
-
 - explicit outcome tier
 - NATURAL 1 / NATURAL 20 when applicable
 - raw d20 result
@@ -278,11 +271,9 @@ No casts yet.
 Cast your fate to begin.
 
 CURRENT TRUTH:
-
 FC-016 is implemented and physically verified.
 
 Physical verification includes:
-
 - populated HISTORY list
 - long scrollable history
 - newest-first records
@@ -315,7 +306,6 @@ No third primary screen is required for v1.
 FC-015 — CAST SCREEN CONTRACT
 
 The CAST screen contains:
-
 - FateCaster identity/header
 - faceted d20 / raw-result area
 - Modifier stepper
@@ -381,7 +371,12 @@ Persistent HISTORY is not erased by an ordinary app restart.
 
 CURRENT TRUTH:
 FC-015 is implemented and physically proven.
-Modifier -10 / +10 and TN 1 / 30 boundaries have also been exercised on hardware.
+Modifier -10 / +10 and TN 1 / 30 boundaries have been exercised on hardware.
+
+KNOWN PHONE-LAYOUT OBSERVATION — 2026-08-20:
+On the current phone layout, the completed CAST readout can extend below the
+initial viewport and require vertical scrolling. This is recorded as a real
+usability issue. No layout change has been made yet.
 
 
 ============================================================
@@ -406,19 +401,15 @@ Data layer:
 Do not add architecture merely for theoretical scalability.
 
 FC-011 — APPLICATION ID
-
 ai.voidwalker.fatecaster
 
 FC-012 — MINIMUM SDK
-
 API 23 — Android 6.0 Marshmallow
 
 FC-013 — TARGET SDK
-
 API 36 — Android 16
 
 FC-014 — INITIAL VERSION
-
 versionCode: 1
 versionName: 0.1.0
 
@@ -441,7 +432,6 @@ requires it. Do not collect data merely because the platform makes it easy.
 FateCaster is intended to become a real Google Play Store application.
 
 Release-critical truth to preserve:
-
 - application ID
 - versionCode
 - versionName
@@ -462,11 +452,10 @@ Goal:
 build → sign → bundle → upload → test → release → update
 
 CURRENT RELEASE TRUTH:
-
 - debug APK builds successfully
 - GitHub Actions produces downloadable debug APK artifacts
 - APKs have been installed on physical Android hardware
-- FateCaster is in active use on a Samsung phone and Samsung tablet
+- FateCaster is in active use on phone and tablet hardware
 - no production release signing workflow exists yet
 - no release Android App Bundle has been produced for Play yet
 - no Play Console testing track has been configured
@@ -480,7 +469,6 @@ CURRENT RELEASE TRUTH:
 Broken Frontier integration is future work and not required for v1.
 
 Possible later features:
-
 - additional dice types
 - saved roll presets
 - custom dice
@@ -490,18 +478,16 @@ Possible later features:
 - Broken Frontier integration
 
 These are possibilities, not promises.
-
 Do not add them merely because implementation would be easy.
 
 
 ============================================================
-🪨 BLOCK 11 — CAVECODE EXPERIMENT
+🪨 BLOCK 11 — CAVECODE EVALUATION / EVIDENCE
 ============================================================
 
 FateCaster is being built under CaveCode from the beginning.
 
-The test is whether CaveCode remains useful through:
-
+The evaluation is whether CaveCode remains useful through:
 1. design
 2. implementation
 3. revision
@@ -516,15 +502,14 @@ The test is whether CaveCode remains useful through:
 SUCCESS DOES NOT MEAN:
 "CaveCode built the app."
 
-A more accurate claim is:
+A more accurate future claim, if supported by evidence, is:
 FateCaster was designed, documented, built, reviewed, handed off,
 packaged, physically tested, released, and maintained using CaveCode
 as its human/AI project-continuity protocol.
 
 Evidence should come from:
-
 - this map
-- Current Cards when useful
+- source-level CaveCode blocks
 - Git commits
 - pull requests
 - CI results
@@ -534,53 +519,108 @@ Evidence should come from:
 - later ability to resume and modify the project without lost context
 
 ACCIDENTAL CONTINUITY EVENT:
-
-Active FateCaster development accidentally crossed from one ChatGPT
-conversation into another before the split was noticed.
-
-This does NOT count as a clean cold-handoff test because project context
-was available across the conversation boundary.
-
+Active FateCaster development crossed from one ChatGPT conversation into
+another before the split was noticed. This does NOT count as a clean
+cold-handoff test because project context was available across the boundary.
 It DOES count as real interruption/resumption evidence.
 
-WORKFLOW OBSERVATION — 2026-08-19:
+CONNECTED CHAT-TO-REPOSITORY WORKFLOW OBSERVATION:
+The Milestone 4 completion cycle demonstrated a low-friction loop:
 
-The Milestone 4 completion cycle had unusually low human-side friction.
-The observed loop was:
-
-Human states intent / approves objective
+Human states intent / approves objective in ChatGPT
     ↓
 Connected AI reads repository truth
     ↓
 AI creates bounded branch and edits repository
     ↓
-Build artifact becomes available
+GitHub Actions tests/builds
     ↓
-Human performs focused physical-device review
+Human reviews and physically tests the product
     ↓
 Human reports proof / problems
     ↓
-AI reconciles project record and prepares integration
+AI reconciles project truth and prepares integration
 
-The human did not need to manually perform the small GitHub edits that
-previously interrupted the design/review flow.
+The human did not need to manually transfer code from chat into GitHub.
+GitHub remains the durable source-control, CI, review, and audit layer.
+The human retains product intent, judgment, physical verification, and
+approval authority.
 
-This is a promising workflow observation, not yet a universal conclusion.
-Future repetitions should determine whether it remains fast, accurate,
-and reviewable as tasks become more complex.
-
-CAVECODE LESSON:
-
-The project record is most useful when it makes the next bounded action
-obvious and keeps settled decisions from being casually reopened.
+This workflow is now an intended working method for this project. Future
+cycles should continue measuring where it succeeds, where it creates risk,
+and which approval boundaries must remain explicit.
 
 
 ============================================================
-🖍️ BLOCK 12 — IMPLEMENTATION MILESTONES
+🪨 BLOCK 12 — CAVECODE INSIDE POLICY
+============================================================
+
+REFERENCE IMPLEMENTATION POLICY:
+FateCaster demonstrates CaveCode at both project level and source level.
+
+PROJECT LEVEL:
+FATECASTER.cavecode.txt owns project truth, settled scope, current state,
+release status, proof, and resumption instructions.
+
+SOURCE LEVEL — FATECASTER REFERENCE STYLE:
+Production Kotlin files use CaveCode v1.0 BLOCKS as visible landmarks inside
+the source, following the established reference-example pattern.
+
+The block heading sits with the code or values it describes. A human or AI
+should be able to search for a block address and land at the relevant part of
+the actual file rather than reading a detached summary and then hunting for it.
+
+When a file has human-tunable values, those values are centralized in a
+🖍️ TUNING KNOBS / HUMAN EDIT ZONE whenever practical. The human should tune
+from that section rather than searching through implementation code.
+
+Player-facing wording may be centralized in a 🌐 PUBLIC TEXT block, matching
+the v1.0 reference-example style.
+
+Do not manufacture empty or irrelevant blocks. A tiny file may need only one
+real block. The number of blocks follows the file's actual structure.
+
+This is the FateCaster reference-implementation style. It does not redefine
+CaveCode v1.0 or modify the CaveCode Protocol repository.
+
+GLYPH MEANINGS REMAIN NORMATIVE:
+🪨 locked / core / foundational
+🖍️ human-safe edit or tuning territory
+🔧 expandable / intentional extension seam
+🎮 operational or game logic
+🌐 public-facing text
+
+AI RULE:
+More ability to act does not mean more authority to invent.
+An AI editing the repository should obey the local CaveCode boundaries and
+make the smallest change required by the human's stated intent.
+
+CURRENT PASS:
+agent/cavecode-inside-pass1 now applies this inline source style to all nine
+current production Kotlin source files:
+- MainActivity.kt
+- CastScreen.kt
+- CastUiState.kt
+- CastViewModel.kt
+- RollResolver.kt
+- RollResult.kt
+- CastHistoryStore.kt
+- CastRecord.kt
+- HistoryScreen.kt
+
+CastScreen.kt and HistoryScreen.kt also centralize their deliberately exposed
+human presentation knobs and public text. Existing values were preserved so
+this restructuring is intended to remain behavior-equivalent.
+
+CI run #57 passed tests, debug APK build, and artifact upload on the revised
+branch head before this map reconciliation commit.
+
+
+============================================================
+🖍️ BLOCK 13 — IMPLEMENTATION MILESTONES
 ============================================================
 
 MILESTONE 1 — ANDROID FOUNDATION — COMPLETE
-
 - Android project skeleton
 - Kotlin / Compose baseline
 - application identity
@@ -589,7 +629,6 @@ MILESTONE 1 — ANDROID FOUNDATION — COMPLETE
 - debug build pipeline
 
 MILESTONE 2 — LOCAL HISTORY DATA LAYER — COMPLETE
-
 - CastRecord model
 - file-backed CastHistoryStore
 - newest-first ordering
@@ -600,7 +639,6 @@ MILESTONE 2 — LOCAL HISTORY DATA LAYER — COMPLETE
 - automated storage tests
 
 MILESTONE 3 — CAST SCREEN — COMPLETE / PHYSICALLY PROVEN
-
 - READY / CASTING / RESULT
 - modifier and TN steppers
 - d20 display / animation
@@ -611,7 +649,6 @@ MILESTONE 3 — CAST SCREEN — COMPLETE / PHYSICALLY PROVEN
 - real device testing
 
 MILESTONE 4 — HISTORY SCREEN — COMPLETE / PHYSICALLY PROVEN
-
 - newest-first visible records
 - timestamps
 - roll math / TN / outcome display
@@ -626,10 +663,23 @@ MILESTONE 4 — HISTORY SCREEN — COMPLETE / PHYSICALLY PROVEN
 - repopulation after a new cast
 - navigation verified
 
-MILESTONE 5 — RELEASE PREPARATION — NEXT
+REFERENCE IMPLEMENTATION PASS — CAVECODE INSIDE — CURRENT
+- inline CaveCode landmarks throughout production Kotlin source
+- centralized human tuning knobs where the file exposes tunable presentation values
+- centralized player-facing text in the two screen files
+- no empty ceremonial block sets for tiny files
+- preserve runtime behavior while restructuring source readability
+- CI passed after the source restructuring
+- human review still required before merge
 
+PHONE LAYOUT POLISH — NEXT AFTER CAVECODE INSIDE
+- address completed CAST readout requiring scroll on the phone
+- use CastScreen.kt BLOCK 2 tuning knobs first
+- preserve RollResolver locked rules
+- physically verify on phone
+
+MILESTONE 5 — RELEASE PREPARATION — AFTER PHONE LAYOUT POLISH
 Expected work includes:
-
 - establish stable signing strategy
 - create secure release signing arrangement
 - produce release Android App Bundle
@@ -641,45 +691,63 @@ Do not commit signing secrets or private signing material to this public reposit
 
 
 ============================================================
-🖍️ BLOCK 13 — CURRENT CARD / RESUME HERE
+🖍️ BLOCK 14 — CURRENT CARD / RESUME HERE
 ============================================================
 
 DATE:
-2026-08-19
+2026-08-21
 
 CURRENT PROJECT:
 FateCaster
 
+BASELINE:
+main @ 15505be22b18e80010f5518088c10e0544114de3
+PR #4 is merged.
+Milestones 1–4 are implemented and physically verified.
+
 CURRENT BRANCH:
-agent/history-completion
+agent/cavecode-inside-pass1
 
-CURRENT TRUTH:
+CURRENT WORK:
+CaveCode Inside Pass 1, revised after human review of the first attempt.
 
-Milestones 1–4 are implemented.
-Milestones 1–4 have been exercised on physical Android hardware.
-FC-016 Clear / Cancel / empty / repopulation behavior is physically verified.
-FateCaster is being used on both phone and tablet.
+The first attempt placed several CaveCode block descriptions together near
+the top of each Kotlin file. Human review found that this did not match the
+intended map-like source experience demonstrated by the established
+Universal Threshold Monitor example.
 
-CURRENT INTEGRATION STATE:
+The branch has now been revised so CaveCode block headings sit with the code
+they describe, tiny files use only the blocks they actually need, and the two
+screen files expose centralized tuning/public-text areas.
 
-History-completion code and this truth checkpoint are on
-agent/history-completion and need final CI / pull-request integration into main.
+CURRENT PROOF:
+- authoritative CaveCode v1.0 specification, block structure, glyph document,
+  and established threshold-monitor example were re-read before revision
+- Android CI run #57 passed tests
+- Android CI run #57 built the debug APK
+- Android CI run #57 uploaded the APK artifact
+- runtime behavior has not yet been physically re-verified on a device after
+  this source restructuring
+
+KNOWN OPEN USABILITY ISSUE:
+The completed CAST result can require vertical scrolling on the phone because
+the current CAST layout is taller than the initial viewport. This is recorded
+but deliberately not fixed in the CaveCode Inside pass.
 
 NEXT ACTION:
-
-1. Open or refresh the pull request from agent/history-completion to main.
-2. Confirm Android CI passes on the final branch head.
-3. Review and merge the checkpoint.
-4. Begin Milestone 5 release preparation from clean main.
-
-FIRST MILESTONE 5 TECHNICAL PRIORITY:
-
-Stabilize signing/build installation behavior before repeated development
-updates are expected to preserve meaningful local history across app updates.
+1. Review the revised PR #5 source structure.
+2. Confirm the inline blocks now look and navigate like the intended CaveCode style.
+3. If approved, merge PR #5.
+4. Start a fresh phone-layout polish branch from new main.
+5. Fix viewport fit through the CastScreen tuning area without changing roll mechanics.
+6. Physically verify the result visibility and ordinary CAST/HISTORY behavior on phone.
+7. Then begin Milestone 5 release preparation.
 
 DO NOT:
-
-- add new product scope during checkpoint integration
+- redesign CaveCode while finishing FateCaster
+- alter CaveCode v1.0 from this repository
+- change roll rules during CaveCode or layout work
+- add new product scope
 - commit signing secrets
 - start Broken Frontier integration
 - describe FateCaster as Play Store released before it actually is
