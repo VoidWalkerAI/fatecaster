@@ -6,10 +6,10 @@ CaveCode Reference Implementation 001
 
 STATUS:
 Implementation in progress — Milestones 1–4 complete in code and physically verified.
-CaveCode Inside Pass 1 is merged. Phone-layout polish is next before release preparation.
+CaveCode Inside Pass 1 is merged and physically regression-verified. Phone-layout polish is next before release preparation.
 
 LAST TRUTH CHECKPOINT:
-2026-08-22 — PR #5 merged into main as 034c48c4d2b019b3f28de4a437f856ebbb2c55c2; Android CI #62 passed on main.
+2026-08-22 — PR #6 merged into main as b5691b75ebeb272cb86df92d29bf8069139fd553; post-CaveCode APK physically regression-verified on Android hardware for the exercised CAST/HISTORY behavior.
 
 PURPOSE OF THIS FILE:
 
@@ -596,7 +596,7 @@ An AI editing the repository should obey the local CaveCode boundaries and
 make the smallest change required by the human's stated intent.
 
 CAVECODE INSIDE STATUS:
-COMPLETE / MERGED
+COMPLETE / MERGED / PHYSICALLY REGRESSION-VERIFIED
 
 PR #5 merged the inline source style into main for all nine current production
 Kotlin source files:
@@ -614,15 +614,26 @@ CastScreen.kt and HistoryScreen.kt centralize their deliberately exposed human
 presentation knobs and player-facing text. Tiny files use only the blocks they
 actually need rather than ceremonial empty block sets.
 
-POST-MERGE PROOF:
+POST-MERGE CI PROOF:
 - PR #5 merged into main as 034c48c4d2b019b3f28de4a437f856ebbb2c55c2
 - Android CI #62 passed on main
 - :app:testDebugUnitTest succeeded
 - :app:assembleDebug succeeded
 - one debug APK artifact was produced
 
-The source restructuring has not yet been physically re-verified on a device.
-Do not claim post-merge physical verification until it occurs.
+POST-CAVECODE PHYSICAL REGRESSION PROOF — 2026-08-22:
+- the APK containing the CaveCode Inside source restructuring was installed and exercised on Android hardware
+- the app presented normally and multiple ordinary Fate casts completed successfully
+- HISTORY displayed populated records with outcome, timestamp, raw roll, modifier, final value, and TN
+- Clear History confirmation was exercised; Cancel preserved the existing records
+- Clear was then confirmed; records were removed, the settled empty state appeared, and Clear History became disabled while empty
+- subsequent casts repopulated HISTORY
+- a NATURAL 20 was physically observed and displayed as CRITICAL SUCCESS with raw/modifier/final math preserved
+- a NATURAL 1 was physically observed and displayed as CRITICAL FAILURE with raw/modifier/final math preserved
+- no behavioral or visual regression was observed in the behaviors exercised
+
+This was a targeted physical regression verification, not an exhaustive rerun
+of every prior boundary, retention, or storage test.
 
 
 ============================================================
@@ -672,13 +683,17 @@ MILESTONE 4 — HISTORY SCREEN — COMPLETE / PHYSICALLY PROVEN
 - repopulation after a new cast
 - navigation verified
 
-REFERENCE IMPLEMENTATION PASS — CAVECODE INSIDE — COMPLETE / MERGED
+REFERENCE IMPLEMENTATION PASS — CAVECODE INSIDE — COMPLETE / MERGED / PHYSICALLY REGRESSION-VERIFIED
 - inline CaveCode landmarks throughout production Kotlin source
 - centralized human tuning knobs where files expose tunable presentation values
 - centralized player-facing text in the two screen files
 - no empty ceremonial block sets for tiny files
 - PR #5 merged into main
 - post-merge Android CI #62 passed
+- post-CaveCode APK physically exercised on Android hardware
+- ordinary CAST/HISTORY behavior showed no observed regression
+- Clear History Cancel/Clear/empty-state flow re-verified
+- NATURAL 20 and NATURAL 1 history display re-verified
 
 PHONE LAYOUT POLISH — NEXT
 - address completed CAST readout requiring scroll on the phone
@@ -709,28 +724,40 @@ CURRENT PROJECT:
 FateCaster
 
 BASELINE:
-main @ 034c48c4d2b019b3f28de4a437f856ebbb2c55c2
-PR #5 is merged.
+main @ b5691b75ebeb272cb86df92d29bf8069139fd553
+PR #5 contains the merged CaveCode Inside source restructuring.
+PR #6 contains the merged post-PR5 map reconciliation.
 Milestones 1–4 are implemented and physically verified.
-CaveCode Inside Pass 1 is merged and post-merge CI is green.
+CaveCode Inside Pass 1 is merged, CI-proven, and physically regression-verified for the behaviors exercised.
 
 CURRENT BRANCH:
-main
-
-No feature branch is currently active in this map.
+agent/post-cavecode-device-verification
 
 CURRENT WORK:
-CaveCode Inside Pass 1 is complete.
-The next product task is phone-layout polish for the known CAST viewport issue.
+Reconcile the project map with the completed post-CaveCode physical verification.
+After this truth-only update is reviewed and merged, begin phone-layout polish for the known CAST viewport issue.
 
 CURRENT PROOF:
-- PR #5 merged on 2026-08-22
-- merge commit: 034c48c4d2b019b3f28de4a437f856ebbb2c55c2
-- Android CI #62 passed on main
+- PR #5 source restructuring merged on 2026-08-22 as 034c48c4d2b019b3f28de4a437f856ebbb2c55c2
+- PR #6 map reconciliation merged on 2026-08-22 as b5691b75ebeb272cb86df92d29bf8069139fd553
+- Android CI #62 passed on main after PR #5
 - unit tests passed
 - debug APK assembled successfully
 - APK artifact produced
-- runtime behavior after the CaveCode source restructuring has not yet been physically re-verified on a device
+- post-CaveCode APK installed and exercised on Android hardware
+- multiple ordinary Fate casts completed successfully with normal presentation
+- populated HISTORY presentation re-verified
+- Clear History confirmation re-verified: Cancel preserved records, confirmed Clear removed records
+- empty HISTORY state and disabled Clear History re-verified
+- subsequent casts repopulated HISTORY
+- NATURAL 20 → CRITICAL SUCCESS display re-verified with roll math preserved
+- NATURAL 1 → CRITICAL FAILURE display re-verified with roll math preserved
+- no behavioral or visual regression observed in the behaviors exercised
+
+VERIFICATION BOUNDARY:
+This post-CaveCode device pass was a targeted physical regression check. It did
+not exhaustively rerun every previously proven modifier/TN boundary, 100-record
+retention/eviction condition, or storage-layer test.
 
 KNOWN OPEN USABILITY ISSUE:
 The completed CAST result can require vertical scrolling on the phone because
@@ -738,14 +765,15 @@ the current CAST layout is taller than the initial viewport. This is recorded
 but has not yet been fixed.
 
 NEXT ACTION:
-1. Create a fresh phone-layout polish branch from current main.
-2. Address viewport fit through CastScreen.kt BLOCK 2 tuning knobs first.
-3. Do not change RollResolver or settled roll mechanics for a layout problem.
-4. Run Android CI.
-5. Physically verify improved result visibility and ordinary CAST/HISTORY behavior on phone.
-6. Reconcile this map with the physical result.
-7. Merge only after review and proof.
-8. Then begin Milestone 5 release preparation.
+1. Review and merge this truth-only physical-verification reconciliation.
+2. Create a fresh phone-layout polish branch from the resulting main.
+3. Address viewport fit through CastScreen.kt BLOCK 2 tuning knobs first.
+4. Do not change RollResolver or settled roll mechanics for a layout problem.
+5. Run Android CI.
+6. Physically verify improved result visibility and ordinary CAST/HISTORY behavior on phone.
+7. Reconcile this map with the physical result.
+8. Merge only after review and proof.
+9. Then begin Milestone 5 release preparation.
 
 DO NOT:
 - redesign CaveCode while finishing FateCaster
