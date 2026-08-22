@@ -78,20 +78,20 @@ private const val D20_ROTATION_DEGREES = 360f
 
 // Main screen spacing and controls
 private val SCREEN_HORIZONTAL_PADDING = 24.dp
-private val SCREEN_VERTICAL_PADDING = 20.dp
-private val HEADER_TO_D20_SPACING = 24.dp
-private val D20_TO_MODIFIER_SPACING = 28.dp
-private val CONTROL_ROW_SPACING = 12.dp
-private val CONTROLS_TO_CAST_BUTTON_SPACING = 24.dp
-private val CAST_BUTTON_HEIGHT = 56.dp
-private val CAST_BUTTON_TO_RESULT_SPACING = 28.dp
-private val RESULT_BOTTOM_SPACING = 24.dp
+private val SCREEN_VERTICAL_PADDING = 12.dp
+private val HEADER_TO_D20_SPACING = 16.dp
+private val D20_TO_MODIFIER_SPACING = 16.dp
+private val CONTROL_ROW_SPACING = 8.dp
+private val CONTROLS_TO_CAST_BUTTON_SPACING = 16.dp
+private val CAST_BUTTON_HEIGHT = 52.dp
+private val CAST_BUTTON_TO_RESULT_SPACING = 16.dp
+private val RESULT_BOTTOM_SPACING = 12.dp
 private val STEPPER_VALUE_HORIZONTAL_PADDING = 16.dp
 private const val STEPPER_LABEL_WEIGHT = 1f
 
 // D20 size and line work
-private val D20_SIZE = 220.dp
-private val D20_NUMBER_SIZE = 52.sp
+private val D20_SIZE = 188.dp
+private val D20_NUMBER_SIZE = 48.sp
 private const val D20_OUTLINE_STROKE_WIDTH = 6f
 private const val D20_FACET_STROKE_WIDTH = 3f
 
@@ -112,8 +112,8 @@ private const val D20_CENTER_X = 0.50f
 private const val D20_CENTER_Y = 0.52f
 
 // Result area
-private val RESULT_AREA_HEIGHT = 132.dp
-private val RESULT_ITEM_SPACING = 12.dp
+private val RESULT_AREA_HEIGHT = 112.dp
+private val RESULT_ITEM_SPACING = 8.dp
 
 /*
 ============================================================
