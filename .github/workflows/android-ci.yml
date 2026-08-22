@@ -39,3 +39,13 @@ jobs:
           name: FateCaster-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+
+      - name: Build FateCaster release AAB
+        run: gradle :app:bundleRelease --stacktrace
+
+      - name: Upload FateCaster release AAB
+        uses: actions/upload-artifact@v7
+        with:
+          name: FateCaster-release-aab-unsigned
+          path: app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
