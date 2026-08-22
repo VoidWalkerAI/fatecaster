@@ -6,10 +6,10 @@ CaveCode Reference Implementation 001
 
 STATUS:
 Implementation in progress — Milestones 1–4 complete in code and physically verified.
-CaveCode Inside Pass 1 is merged and physically regression-verified. Phone-layout polish is next before release preparation.
+CaveCode Inside Pass 1 is merged and physically regression-verified. Phone-layout polish is implemented and physically verified on PR #8; merge is pending before release preparation.
 
 LAST TRUTH CHECKPOINT:
-2026-08-22 — PR #6 merged into main as b5691b75ebeb272cb86df92d29bf8069139fd553; post-CaveCode APK physically regression-verified on Android hardware for the exercised CAST/HISTORY behavior.
+2026-08-22 — PR #8 branch candidate f49e672cd9eb2ae79091e0c238312703a21a976a passed Android CI #73 and was physically verified on phone for ordinary completed-result fit and the taller NATURAL 1 / CRITICAL FAILURE result state.
 
 PURPOSE OF THIS FILE:
 
@@ -373,10 +373,19 @@ CURRENT TRUTH:
 FC-015 is implemented and physically proven.
 Modifier -10 / +10 and TN 1 / 30 boundaries have been exercised on hardware.
 
-KNOWN PHONE-LAYOUT OBSERVATION — 2026-08-20:
-On the current phone layout, the completed CAST readout can extend below the
-initial viewport and require vertical scrolling. This is recorded as a real
-usability issue. No layout change has been made yet.
+PHONE-LAYOUT OBSERVATION / VERIFIED CANDIDATE FIX:
+The original phone layout could place the completed CAST readout below the
+initial viewport and require unnecessary vertical scrolling.
+
+PR #8 candidate f49e672cd9eb2ae79091e0c238312703a21a976a addresses this through
+CastScreen.kt BLOCK 2 tuning knobs only. Android CI #73 passed. Physical phone
+verification showed an ordinary completed SUCCESS result fully visible in the
+normal viewport without scrolling, including bottom navigation. The taller
+CRITICAL FAILURE / NATURAL 1 result was then physically exercised and also fit
+fully in the whole phone viewport without scrolling.
+
+This candidate fix is physically verified on the tested phone but is not yet
+merged to main.
 
 
 ============================================================
@@ -695,13 +704,16 @@ REFERENCE IMPLEMENTATION PASS — CAVECODE INSIDE — COMPLETE / MERGED / PHYSIC
 - Clear History Cancel/Clear/empty-state flow re-verified
 - NATURAL 20 and NATURAL 1 history display re-verified
 
-PHONE LAYOUT POLISH — NEXT
-- address completed CAST readout requiring scroll on the phone
-- begin with CastScreen.kt BLOCK 2 tuning knobs
-- preserve RollResolver locked rules
-- physically verify on phone
+PHONE LAYOUT POLISH — COMPLETE ON PR #8 CANDIDATE / PHYSICALLY VERIFIED / MERGE PENDING
+- compacted CAST presentation through CastScreen.kt BLOCK 2 tuning knobs only
+- RollResolver and settled roll mechanics unchanged
+- Android CI #73 passed tests and debug APK build
+- ordinary SUCCESS result physically fits the normal phone viewport without scrolling
+- taller CRITICAL FAILURE / NATURAL 1 result physically fits the whole phone viewport without scrolling
+- bottom navigation remains visible in the verified completed-result layouts
+- PR #8 still requires review and merge before this work is part of main
 
-MILESTONE 5 — RELEASE PREPARATION — AFTER PHONE LAYOUT POLISH
+MILESTONE 5 — RELEASE PREPARATION — AFTER PHONE LAYOUT POLISH MERGES
 Expected work includes:
 - establish stable signing strategy
 - create secure release signing arrangement
@@ -724,56 +736,49 @@ CURRENT PROJECT:
 FateCaster
 
 BASELINE:
-main @ b5691b75ebeb272cb86df92d29bf8069139fd553
+main @ f89ba1e916a5d373a8f0aec92857cbabd54c4695
 PR #5 contains the merged CaveCode Inside source restructuring.
 PR #6 contains the merged post-PR5 map reconciliation.
+PR #7 contains the merged post-CaveCode physical-verification reconciliation.
 Milestones 1–4 are implemented and physically verified.
 CaveCode Inside Pass 1 is merged, CI-proven, and physically regression-verified for the behaviors exercised.
 
 CURRENT BRANCH:
-agent/post-cavecode-device-verification
+agent/cast-phone-layout
 
 CURRENT WORK:
-Reconcile the project map with the completed post-CaveCode physical verification.
-After this truth-only update is reviewed and merged, begin phone-layout polish for the known CAST viewport issue.
+PR #8 phone-layout polish candidate is implemented, CI-proven, and physically
+verified on the tested phone. This map is being reconciled with that proof
+before final review and merge.
 
 CURRENT PROOF:
-- PR #5 source restructuring merged on 2026-08-22 as 034c48c4d2b019b3f28de4a437f856ebbb2c55c2
-- PR #6 map reconciliation merged on 2026-08-22 as b5691b75ebeb272cb86df92d29bf8069139fd553
-- Android CI #62 passed on main after PR #5
-- unit tests passed
-- debug APK assembled successfully
-- APK artifact produced
-- post-CaveCode APK installed and exercised on Android hardware
-- multiple ordinary Fate casts completed successfully with normal presentation
-- populated HISTORY presentation re-verified
-- Clear History confirmation re-verified: Cancel preserved records, confirmed Clear removed records
-- empty HISTORY state and disabled Clear History re-verified
-- subsequent casts repopulated HISTORY
-- NATURAL 20 → CRITICAL SUCCESS display re-verified with roll math preserved
-- NATURAL 1 → CRITICAL FAILURE display re-verified with roll math preserved
-- no behavioral or visual regression observed in the behaviors exercised
+- PR #7 merged to main on 2026-08-22 as f89ba1e916a5d373a8f0aec92857cbabd54c4695
+- phone-layout code candidate commit: f49e672cd9eb2ae79091e0c238312703a21a976a
+- Android CI #73 passed on the phone-layout candidate
+- :app:testDebugUnitTest succeeded
+- :app:assembleDebug succeeded
+- FateCaster debug APK artifact produced
+- only CastScreen.kt Block 2 presentation tuning values were changed in the initial layout commit
+- ordinary completed SUCCESS result physically fit in the normal phone viewport without scrolling
+- CRITICAL FAILURE / NATURAL 1 completed result physically fit in the whole phone viewport without scrolling
+- roll math and settled result wording remained visible
+- bottom CAST / HISTORY navigation remained visible in the verified full-screen natural-result case
 
 VERIFICATION BOUNDARY:
-This post-CaveCode device pass was a targeted physical regression check. It did
-not exhaustively rerun every previously proven modifier/TN boundary, 100-record
-retention/eviction condition, or storage-layer test.
+The phone-layout pass is physically verified for the tested phone and the
+completed ordinary SUCCESS and CRITICAL FAILURE / NATURAL 1 layouts exercised.
+This does not claim exhaustive layout verification across every Android device,
+screen size, font scale, orientation, or natural-result combination.
 
-KNOWN OPEN USABILITY ISSUE:
-The completed CAST result can require vertical scrolling on the phone because
-the current CAST layout is taller than the initial viewport. This is recorded
-but has not yet been fixed.
+PHONE-LAYOUT ISSUE STATUS:
+The known unnecessary-scroll issue is physically resolved on the tested phone
+by the PR #8 candidate. The fix is not yet part of main until PR #8 is merged.
 
 NEXT ACTION:
-1. Review and merge this truth-only physical-verification reconciliation.
-2. Create a fresh phone-layout polish branch from the resulting main.
-3. Address viewport fit through CastScreen.kt BLOCK 2 tuning knobs first.
-4. Do not change RollResolver or settled roll mechanics for a layout problem.
-5. Run Android CI.
-6. Physically verify improved result visibility and ordinary CAST/HISTORY behavior on phone.
-7. Reconcile this map with the physical result.
-8. Merge only after review and proof.
-9. Then begin Milestone 5 release preparation.
+1. Review the reconciled PR #8 diff and CI result.
+2. Merge PR #8 only after approval.
+3. After merge, reconcile main baseline if needed.
+4. Begin Milestone 5 release preparation.
 
 DO NOT:
 - redesign CaveCode while finishing FateCaster
