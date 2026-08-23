@@ -6,10 +6,10 @@ CaveCode Reference Implementation 001
 
 STATUS:
 Implementation in progress — Milestones 1–4 complete in code and physically verified.
-CaveCode Inside Pass 1 and phone-layout polish are merged and physically verified. Milestone 5 release preparation has reached protected release signing and successful Google Play internal distribution.
+CaveCode Inside Pass 1 and phone-layout polish are merged and physically verified. Milestone 5 has reached Google Play closed-testing preparation; internal Play distribution is proven and tester recruitment is now the active dependency.
 
 LAST TRUTH CHECKPOINT:
-2026-08-23 — FateCaster produced a protected upload-key-signed release AAB, Google Play accepted versionCode 1 / versionName 0.1.0, the internal-testing build was installed through Google Play on Android hardware, and CAST plus HISTORY were physically exercised successfully.
+2026-08-23 — FateCaster is built, protected-upload-key signed, accepted by Google Play, internally distributed, installed from Google Play, and physically exercised. Play Console setup has advanced through the privacy policy and required app declarations; United States is saved for closed testing, a dedicated closed-test tester list exists with 2 current addresses, and recruitment toward the required tester group is underway. No public Production release has occurred.
 
 PURPOSE OF THIS FILE:
 
@@ -478,15 +478,20 @@ CURRENT RELEASE TRUTH:
 - the Play-distributed build was installed on physical Android hardware through Google Play
 - CAST was physically exercised on the Play-distributed build, including a NATURAL 1 resolving as CRITICAL FAILURE with preserved roll math and TN
 - HISTORY was physically opened on the Play-distributed build and displayed populated cast records including ordinary and natural-result entries
+- a public privacy policy exists at https://voidwalkerai.github.io/fatecaster/privacy.html and is backed by docs/privacy.html in this repository
+- Play Console app setup has been worked through for content rating, target audience/content, privacy policy, ads declaration, data safety, health-app declaration, and app category
+- the English (United States) store listing has been drafted; visual assets were prepared and revised, and the final selected asset set should be checked in Play Console before review submission
+- closed testing is being configured for the United States
+- a dedicated FateCaster Closed Test email list exists with 2 current addresses; these are not evidence that the required qualifying tester count has been reached
 - no public Production release has occurred
-- closed testing, production-access requirements, final store-listing work, and data-safety completion remain release work
 
 NEXT RELEASE ACTION:
-1. Finish the remaining Play Console app-setup material, including store-listing and data-safety requirements.
-2. Prepare the required closed-testing track and tester group.
-3. Complete the closed-testing requirement and apply for Production access when eligible.
-4. Preserve versionCode discipline: every later Play upload must increment versionCode above 1.
-5. Do not call FateCaster publicly released until a Production release actually occurs.
+1. Recruit enough real closed-test participants to satisfy Google Play's production-access testing requirement.
+2. Finish selecting the closed-test tester group and create/roll out the closed-testing release if that release has not already been created when work resumes.
+3. Distribute the Google Play opt-in link and verify that at least 12 testers are actually opted in; being present on an email list is not the same as being opted in.
+4. Keep at least 12 testers continuously opted in for the required 14-day testing period, then apply for Production access when eligible.
+5. Preserve versionCode discipline: every later Play upload must increment versionCode above 1.
+6. Do not call FateCaster publicly released until a Production release actually occurs.
 
 
 ============================================================
@@ -773,12 +778,20 @@ COMPLETED SO FAR:
 - Play-distributed FateCaster was installed on physical Android hardware
 - CAST was physically exercised successfully on the Play-distributed build, including NATURAL 1 / CRITICAL FAILURE display and preserved math
 - HISTORY was physically exercised successfully on the Play-distributed build with populated ordinary and natural-result records
+- privacy policy page exists in docs/privacy.html and is published through GitHub Pages
+- Play Console setup has been worked through for content rating, target audience/content, privacy policy, ads declaration, data safety, health-app declaration, and app category
+- English (United States) store-listing text is saved as a draft
+- Play visual assets have been prepared and revised to avoid unsupported claims; final selected assets should be checked in Play Console before review submission
+- closed testing is configured for United States
+- FateCaster Closed Test tester list exists with 2 current addresses; recruitment is underway
 
 NEXT RELEASE WORK:
-- finish store-listing and data-safety material required by Play Console
-- prepare and run the required closed-testing track
-- satisfy Production-access requirements and apply when eligible
-- confirm the versioning procedure for every later Play upload
+- recruit real closed-test participants; do not treat placeholder/personal accounts as proof that the required tester group has been reached
+- finish closed-test tester selection and create/roll out the closed release if still pending when work resumes
+- distribute the opt-in link and verify at least 12 testers are actually opted in
+- maintain at least 12 continuously opted-in testers for the required 14 days
+- apply for Production access when eligible
+- increment versionCode for every later Play upload
 - public Production release remains pending
 
 Do not commit signing secrets or private signing material to this public repository.
@@ -789,64 +802,88 @@ Do not commit signing secrets or private signing material to this public reposit
 ============================================================
 
 DATE:
-2026-08-22
+2026-08-23
 
 CURRENT PROJECT:
 FateCaster
 
-BASELINE:
-main @ f89ba1e916a5d373a8f0aec92857cbabd54c4695
-PR #5 contains the merged CaveCode Inside source restructuring.
-PR #6 contains the merged post-PR5 map reconciliation.
-PR #7 contains the merged post-CaveCode physical-verification reconciliation.
-Milestones 1–4 are implemented and physically verified.
-CaveCode Inside Pass 1 is merged, CI-proven, and physically regression-verified for the behaviors exercised.
+WHAT CHANGED?
+- PR #11 merged the Google Play internal-distribution proof into the project map.
+- docs/privacy.html was added and is published through GitHub Pages as FateCaster's public privacy policy.
+- Play Console app setup was worked through for content rating, target audience/content, privacy policy, ads declaration, data safety, health-app declaration, and app category.
+- English (United States) store-listing text was saved as a draft.
+- Play listing visual assets were created and revised; inaccurate claims such as "Analyze Results" / "Resolve Outcomes" were rejected and the banner was corrected to "View Results."
+- The generated store icon was corrected to the required 512 × 512 size; the feature graphic was prepared at 1024 × 500.
+- Closed testing setup began. United States is saved as the testing region.
+- A dedicated FateCaster Closed Test tester list exists with 2 current addresses. These are being treated as setup/placeholders while real tester recruitment proceeds.
 
-CURRENT BRANCH:
-agent/cast-phone-layout
+WHAT WAS DECIDED?
+- Use CaveCode's existing handoff-checkpoint requirements for meaningful stops; do not invent a separate FateCaster handoff ritual.
+- The Current Card is refreshed at a meaningful stop/interruption/handoff rather than after every ordinary commit or merge.
+- The closed test should be supported by real participants using their own Google accounts; one owner account may participate, but multiple owner-controlled accounts should not be relied upon as the qualifying tester group.
 
-CURRENT WORK:
-PR #8 phone-layout polish candidate is implemented, CI-proven, and physically
-verified on the tested phone. This map is being reconciled with that proof
-before final review and merge.
+WHY WAS IT DECIDED?
+- CaveCode's ratified project-memory approach already defines what a handoff checkpoint should preserve.
+- Google Play's current production-access gate shown in Play Console requires at least 12 closed testers continuously opted in for at least 14 days.
+- Email-list membership alone does not prove that a person opted into the closed test or participated meaningfully.
 
-CURRENT PROOF:
-- PR #7 merged to main on 2026-08-22 as f89ba1e916a5d373a8f0aec92857cbabd54c4695
-- phone-layout code candidate commit: f49e672cd9eb2ae79091e0c238312703a21a976a
-- Android CI #73 passed on the phone-layout candidate
-- :app:testDebugUnitTest succeeded
-- :app:assembleDebug succeeded
-- FateCaster debug APK artifact produced
-- only CastScreen.kt Block 2 presentation tuning values were changed in the initial layout commit
-- ordinary completed SUCCESS result physically fit in the normal phone viewport without scrolling
-- CRITICAL FAILURE / NATURAL 1 completed result physically fit in the whole phone viewport without scrolling
-- roll math and settled result wording remained visible
-- bottom CAST / HISTORY navigation remained visible in the verified full-screen natural-result case
+WHAT WAS TRIED AND FAILED?
+- The first generated store icon was not in the exact Play-required dimensions and had to be corrected to 512 × 512.
+- A promotional feature graphic initially used "Analyze Results" and then "Resolve Outcomes," which overstated FateCaster v0.1.0. Those phrases were rejected; the truthful replacement is "View Results."
+- Earlier AI-composed phone-listing graphics were noticed to risk altering the actual in-app presentation. Later listing graphics were therefore based on real FateCaster screenshots and constrained not to invent features. Final Play Console asset selection still needs a human check before review submission.
 
-VERIFICATION BOUNDARY:
-The phone-layout pass is physically verified for the tested phone and the
-completed ordinary SUCCESS and CRITICAL FAILURE / NATURAL 1 layouts exercised.
-This does not claim exhaustive layout verification across every Android device,
-screen size, font scale, orientation, or natural-result combination.
+WHAT CURRENTLY WORKS?
+- FateCaster v0.1.0 builds, signs, and produces a verified signed AAB through the protected release-signing workflow.
+- Google Play accepted versionCode 1 / versionName 0.1.0.
+- Internal Play distribution works.
+- The Play-distributed build installs and runs on physical Android hardware.
+- CAST and HISTORY were physically exercised successfully on the Play-distributed build.
+- The privacy policy is publicly reachable.
+- Play Console core app declarations and store-listing draft work have been substantially completed.
+- United States is saved for closed testing and the closed-test tester list exists.
 
-PHONE-LAYOUT ISSUE STATUS:
-The known unnecessary-scroll issue is physically resolved on the tested phone
-by the PR #8 candidate. The fix is not yet part of main until PR #8 is merged.
+WHAT IS CURRENTLY BROKEN?
+- No current FateCaster app-behavior defect is known from the exercised Play-distributed build.
+- Production access is not available yet because the required closed-testing gate has not been completed.
 
-NEXT ACTION:
-1. Review the reconciled PR #8 diff and CI result.
-2. Merge PR #8 only after approval.
-3. After merge, reconcile main baseline if needed.
-4. Begin Milestone 5 release preparation.
+WHAT REMAINS UNCERTAIN?
+- The final set of at least 12 real closed-test participants has not yet been recruited or verified as opted in.
+- A closed-testing release has not been confirmed as rolled out at this checkpoint.
+- The final visual assets selected in Play Console should be reviewed before sending the app setup/listing for review.
+- The exact date the 14-day closed-test clock can begin depends on when the required tester count is actually opted in.
+
+WHAT FILES OR SUBSYSTEMS WERE AFFECTED?
+- FATECASTER.cavecode.txt
+- docs/privacy.html
+- GitHub Pages deployment from main /docs
+- Google Play Console app setup, store listing, internal testing, and closed-testing configuration
+- No Kotlin roll logic or app behavior was changed during this handoff pass.
+
+WHAT SHOULD HAPPEN NEXT?
+1. Recruit real closed-test participants, aiming above the minimum so one dropout does not leave the test below the required count.
+2. Return to Play Console → Testing → Closed testing.
+3. Finish the tester group with real Google-account addresses and save it.
+4. Create/roll out the closed-testing release if it is still pending.
+5. Distribute the closed-test opt-in link and verify that at least 12 people actually opt in.
+6. Maintain at least 12 continuously opted-in testers for the required 14-day period.
+7. Apply for Production access when Google Play marks the account eligible.
+8. If a new AAB must be uploaded for any later change, increment versionCode above 1 before upload.
+
+WHAT IS THE NEXT HUMAN OR AI MOST LIKELY TO MISUNDERSTAND?
+- FateCaster is NOT publicly released to Production.
+- Internal testing success does not satisfy the closed-testing production gate.
+- An email address on the tester list is not the same thing as an opted-in tester.
+- The 2 current closed-test addresses are not proof that the qualifying tester count has been reached.
+- Do not rebuild or change FateCaster merely because tester recruitment takes several days; make app changes only for an actual defect or Play-required compliance need.
+- Do not expose, commit, or paste the upload keystore or signing passwords into the public repository.
 
 DO NOT:
-- redesign CaveCode while finishing FateCaster
+- redesign CaveCode while FateCaster is waiting on closed testing
 - alter CaveCode v1.0 from this repository
-- change roll rules during layout work
-- add new product scope
-- commit signing secrets
-- start Broken Frontier integration
-- describe FateCaster as Play Store released before it actually is
+- change settled roll rules without a separate product decision
+- add new v1 product scope merely to stay busy during the test wait
+- commit signing secrets or private signing material
+- describe FateCaster as publicly released before Production actually occurs
 
 ============================================================
 END OF CURRENT TRUTH
