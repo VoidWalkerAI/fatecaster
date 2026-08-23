@@ -4,6 +4,17 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+val releaseStoreFile = System.getenv("FATECASTER_UPLOAD_STORE_FILE")
+val releaseStorePassword = System.getenv("FATECASTER_UPLOAD_STORE_PASSWORD")
+val releaseKeyAlias = System.getenv("FATECASTER_UPLOAD_KEY_ALIAS")
+val releaseKeyPassword = System.getenv("FATECASTER_UPLOAD_KEY_PASSWORD")
+val releaseSigningAvailable = listOf(
+    releaseStoreFile,
+    releaseStorePassword,
+    releaseKeyAlias,
+    releaseKeyPassword
+).all { !it.isNullOrBlank() }
+
 android {
     namespace = "ai.voidwalker.fatecaster"
     compileSdk = 36
@@ -20,9 +31,24 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    if (releaseSigningAvailable) {
+        signingConfigs {
+            create("release") {
+                storeFile = file(releaseStoreFile!!)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+                storeType = "JKS"
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            if (releaseSigningAvailable) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 

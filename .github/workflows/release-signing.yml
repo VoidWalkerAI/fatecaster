@@ -1,0 +1,59 @@
+name: FateCaster Release Signing
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  signed-release-aab:
+    runs-on: ubuntu-latest
+    environment: release-signing
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle 8.13
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: "8.13"
+
+      - name: Reconstruct upload keystore
+        shell: bash
+        env:
+          FATECASTER_UPLOAD_KEYSTORE_BASE64: ${{ secrets.FATECASTER_UPLOAD_KEYSTORE_BASE64 }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$FATECASTER_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/fatecaster-upload.jks"
+          chmod 600 "$RUNNER_TEMP/fatecaster-upload.jks"
+
+      - name: Build signed FateCaster release AAB
+        env:
+          FATECASTER_UPLOAD_STORE_FILE: ${{ runner.temp }}/fatecaster-upload.jks
+          FATECASTER_UPLOAD_STORE_PASSWORD: ${{ secrets.FATECASTER_UPLOAD_STORE_PASSWORD }}
+          FATECASTER_UPLOAD_KEY_ALIAS: ${{ secrets.FATECASTER_UPLOAD_KEY_ALIAS }}
+          FATECASTER_UPLOAD_KEY_PASSWORD: ${{ secrets.FATECASTER_UPLOAD_KEY_PASSWORD }}
+        run: gradle :app:bundleRelease --stacktrace
+
+      - name: Verify release AAB signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          jarsigner -verify -verbose -certs app/build/outputs/bundle/release/app-release.aab
+          keytool -printcert -jarfile app/build/outputs/bundle/release/app-release.aab | tee "$RUNNER_TEMP/fatecaster-signer.txt"
+          grep -F "SHA256: 5A:B0:50:41:71:A6:26:3E:F4:B1:01:F1:45:30:C6:31:E4:0D:B1:84:41:75:8C:D8:35:31:A7:72:04:02:E2:72" "$RUNNER_TEMP/fatecaster-signer.txt"
+
+      - name: Upload signed FateCaster release AAB
+        uses: actions/upload-artifact@v7
+        with:
+          name: FateCaster-release-aab-signed
+          path: app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
