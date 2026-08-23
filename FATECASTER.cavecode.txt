@@ -823,14 +823,14 @@ WHAT WAS DECIDED?
 - The closed test should be supported by real participants using their own Google accounts; one owner account may participate, but multiple owner-controlled accounts should not be relied upon as the qualifying tester group.
 
 WHY WAS IT DECIDED?
-- CaveCode's ratified project-memory approach already defines what a handoff checkpoint should preserve.
+- CaveCode Protocol master map Block 6 already defines the handoff-checkpoint information to preserve at a meaningful stop.
 - Google Play's current production-access gate shown in Play Console requires at least 12 closed testers continuously opted in for at least 14 days.
 - Email-list membership alone does not prove that a person opted into the closed test or participated meaningfully.
 
 WHAT WAS TRIED AND FAILED?
 - The first generated store icon was not in the exact Play-required dimensions and had to be corrected to 512 × 512.
 - A promotional feature graphic initially used "Analyze Results" and then "Resolve Outcomes," which overstated FateCaster v0.1.0. Those phrases were rejected; the truthful replacement is "View Results."
-- Earlier AI-composed phone-listing graphics were noticed to risk altering the actual in-app presentation. Later listing graphics were therefore based on real FateCaster screenshots and constrained not to invent features. Final Play Console asset selection still needs a human check before review submission.
+- Earlier AI-composed phone-listing graphics were noticed to risk altering the actual in-app presentation. Later listing graphics were regenerated from real FateCaster screenshots with instructions not to invent features, but generated images may still alter details; the final Play Console asset selection therefore requires human review before submission.
 
 WHAT CURRENTLY WORKS?
 - FateCaster v0.1.0 builds, signs, and produces a verified signed AAB through the protected release-signing workflow.
