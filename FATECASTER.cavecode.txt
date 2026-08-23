@@ -6,10 +6,10 @@ CaveCode Reference Implementation 001
 
 STATUS:
 Implementation in progress — Milestones 1–4 complete in code and physically verified.
-CaveCode Inside Pass 1 is merged and physically regression-verified. Phone-layout polish is complete, merged, and physically verified. Milestone 5 release preparation is underway; unsigned release AAB packaging is proven and secure signing is next.
+CaveCode Inside Pass 1 and phone-layout polish are merged and physically verified. Milestone 5 release preparation has reached protected release signing and successful Google Play internal distribution.
 
 LAST TRUTH CHECKPOINT:
-2026-08-22 — Android CI #79 passed tests, debug APK assembly, and :app:bundleRelease; FateCaster produced a downloadable unsigned release AAB that was downloaded and independently inspected as an actual Android App Bundle and confirmed unsigned.
+2026-08-23 — FateCaster produced a protected upload-key-signed release AAB, Google Play accepted versionCode 1 / versionName 0.1.0, the internal-testing build was installed through Google Play on Android hardware, and CAST plus HISTORY were physically exercised successfully.
 
 PURPOSE OF THIS FILE:
 
@@ -460,27 +460,33 @@ Goal:
 build → sign → bundle → upload → test → release → update
 
 CURRENT RELEASE TRUTH:
-- debug APK builds successfully
-- GitHub Actions produces downloadable debug APK artifacts
-- APKs have been installed on physical Android hardware
-- FateCaster is in active use on phone and tablet hardware
-- release-format Android App Bundle packaging is now proven
-- Android CI #79 passed :app:testDebugUnitTest, :app:assembleDebug, and :app:bundleRelease
-- CI produced the artifact FateCaster-release-aab-unsigned
-- the release AAB artifact was downloaded and independently inspected as a real Android App Bundle
-- signing verification reported `jar is unsigned`, matching the intended unsigned-packaging proof
-- the current release AAB is NOT yet Play-upload-ready because no upload-key signing arrangement exists
-- no production release signing workflow exists yet
-- no upload keystore has been established for FateCaster yet
-- no Play Console testing track has been configured
-- no Play Store release has occurred
+- debug APK builds successfully and GitHub Actions produces downloadable debug APK artifacts
+- release-format Android App Bundle packaging is proven
+- Android CI #79 passed :app:testDebugUnitTest, :app:assembleDebug, and :app:bundleRelease and produced FateCaster-release-aab-unsigned
+- the unsigned AAB was downloaded, inspected as a real Android App Bundle, and confirmed unsigned as intended for that proof stage
+- FateCaster now has a deliberately created upload keystore stored outside the public repository with a separate backup
+- upload-key public certificate SHA-256 fingerprint: 5A:B0:50:41:71:A6:26:3E:F4:B1:01:F1:45:30:C6:31:E4:0D:B1:84:41:75:8C:D8:35:31:A7:72:04:02:E2:72
+- PR #10 merged the optional Gradle release-signing hook and manual FateCaster Release Signing workflow into main as 5f4f46fed5088bab4f0cf84cc129575b93727a86
+- the signing workflow uses the protected release-signing GitHub environment; private signing material and passwords are not committed to the repository
+- the protected workflow reconstructed the keystore only inside the runner, built a signed release AAB, and verified the signer against the expected upload-key fingerprint
+- the resulting signed AAB was independently checked with jarsigner and keytool; signature verification succeeded and the signer matched the FateCaster upload certificate
+- a Google Play developer account and FateCaster Play Console app record now exist
+- Google Play App Signing is active for FateCaster
+- Google Play accepted versionCode 1 / versionName 0.1.0 for the internal-testing track
+- Play Console recognized minimum API 23 and target API 36 and reported no blocking bundle error
+- the internal-testing release was made available to designated testers
+- the Play-distributed build was installed on physical Android hardware through Google Play
+- CAST was physically exercised on the Play-distributed build, including a NATURAL 1 resolving as CRITICAL FAILURE with preserved roll math and TN
+- HISTORY was physically opened on the Play-distributed build and displayed populated cast records including ordinary and natural-result entries
+- no public Production release has occurred
+- closed testing, production-access requirements, final store-listing work, and data-safety completion remain release work
 
 NEXT RELEASE ACTION:
-1. Deliberately create FateCaster's upload keystore outside the public repository.
-2. Back up the keystore securely before depending on it.
-3. Configure CI signing through protected secrets without committing private key material or passwords.
-4. Produce and verify a signed Play-uploadable AAB.
-5. Then proceed into Play Console testing setup.
+1. Finish the remaining Play Console app-setup material, including store-listing and data-safety requirements.
+2. Prepare the required closed-testing track and tester group.
+3. Complete the closed-testing requirement and apply for Production access when eligible.
+4. Preserve versionCode discipline: every later Play upload must increment versionCode above 1.
+5. Do not call FateCaster publicly released until a Production release actually occurs.
 
 
 ============================================================
@@ -570,6 +576,28 @@ approval authority.
 This workflow is now an intended working method for this project. Future
 cycles should continue measuring where it succeeds, where it creates risk,
 and which approval boundaries must remain explicit.
+
+PLAY DISTRIBUTION EVIDENCE — 2026-08-23:
+The release-preparation cycle extended that workflow through a security-sensitive
+boundary without moving private signing material into the repository:
+
+Human authorizes creation of upload identity
+    ↓
+Upload keystore is created outside the repository and backed up
+    ↓
+Human places credentials in a protected GitHub environment
+    ↓
+AI wires bounded signing support without receiving or committing secret values
+    ↓
+Human approval gates release-signing access
+    ↓
+CI builds and verifies a signed AAB
+    ↓
+Google Play accepts the bundle and distributes an internal-test build
+    ↓
+Human installs from Google Play and physically exercises CAST / HISTORY
+
+This is release-pipeline evidence, not yet evidence of a public Production release.
 
 
 ============================================================
@@ -731,18 +759,27 @@ COMPLETED SO FAR:
 - application ID, versionCode, versionName, minSdk, and targetSdk are established
 - CI release Android App Bundle packaging is implemented
 - Android CI #79 passed tests, debug APK assembly, and release AAB assembly
-- FateCaster-release-aab-unsigned artifact was produced
-- downloaded app-release.aab was independently inspected as a real Android App Bundle
-- signing verification confirmed the bundle is unsigned, as intended for this proof stage
+- FateCaster-release-aab-unsigned artifact was produced and independently verified as an unsigned Android App Bundle
+- FateCaster upload keystore was created outside the public repository and separately backed up
+- protected release-signing environment was configured without committing private signing material to the repository
+- PR #10 merged the release-signing hook and manual protected signing workflow into main as 5f4f46fed5088bab4f0cf84cc129575b93727a86
+- protected signing workflow produced a signed release AAB
+- signed AAB signer was independently verified against the FateCaster upload certificate fingerprint
+- Google Play developer account was created and FateCaster was created in Play Console
+- Google Play App Signing is active
+- Google Play accepted versionCode 1 / versionName 0.1.0 for internal testing
+- Google Play reported no blocking bundle error for the accepted release
+- internal-testing release was made available to designated testers
+- Play-distributed FateCaster was installed on physical Android hardware
+- CAST was physically exercised successfully on the Play-distributed build, including NATURAL 1 / CRITICAL FAILURE display and preserved math
+- HISTORY was physically exercised successfully on the Play-distributed build with populated ordinary and natural-result records
 
 NEXT RELEASE WORK:
-- establish FateCaster upload-keystore strategy
-- create and securely back up the upload keystore outside the public repository
-- wire CI signing through protected secrets without exposing private material
-- produce and verify a signed Play-uploadable AAB
-- confirm versioning procedure
-- prepare Play Console testing path
-- prepare store listing / data-safety material
+- finish store-listing and data-safety material required by Play Console
+- prepare and run the required closed-testing track
+- satisfy Production-access requirements and apply when eligible
+- confirm the versioning procedure for every later Play upload
+- public Production release remains pending
 
 Do not commit signing secrets or private signing material to this public repository.
 
