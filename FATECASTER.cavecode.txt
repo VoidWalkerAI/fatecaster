@@ -6,10 +6,10 @@ CaveCode Reference Implementation 001
 
 STATUS:
 Implementation in progress — Milestones 1–4 complete in code and physically verified.
-CaveCode Inside Pass 1 is merged and physically regression-verified. Phone-layout polish is implemented and physically verified on PR #8; merge is pending before release preparation.
+CaveCode Inside Pass 1 is merged and physically regression-verified. Phone-layout polish is complete, merged, and physically verified. Milestone 5 release preparation is underway; unsigned release AAB packaging is proven and secure signing is next.
 
 LAST TRUTH CHECKPOINT:
-2026-08-22 — PR #8 branch candidate f49e672cd9eb2ae79091e0c238312703a21a976a passed Android CI #73 and was physically verified on phone for ordinary completed-result fit and the taller NATURAL 1 / CRITICAL FAILURE result state.
+2026-08-22 — Android CI #79 passed tests, debug APK assembly, and :app:bundleRelease; FateCaster produced a downloadable unsigned release AAB that was downloaded and independently inspected as an actual Android App Bundle and confirmed unsigned.
 
 PURPOSE OF THIS FILE:
 
@@ -373,19 +373,18 @@ CURRENT TRUTH:
 FC-015 is implemented and physically proven.
 Modifier -10 / +10 and TN 1 / 30 boundaries have been exercised on hardware.
 
-PHONE-LAYOUT OBSERVATION / VERIFIED CANDIDATE FIX:
+PHONE-LAYOUT FIX — COMPLETE / MERGED / PHYSICALLY VERIFIED:
 The original phone layout could place the completed CAST readout below the
 initial viewport and require unnecessary vertical scrolling.
 
-PR #8 candidate f49e672cd9eb2ae79091e0c238312703a21a976a addresses this through
-CastScreen.kt BLOCK 2 tuning knobs only. Android CI #73 passed. Physical phone
-verification showed an ordinary completed SUCCESS result fully visible in the
-normal viewport without scrolling, including bottom navigation. The taller
-CRITICAL FAILURE / NATURAL 1 result was then physically exercised and also fit
-fully in the whole phone viewport without scrolling.
+PR #8 resolved this through CastScreen.kt BLOCK 2 tuning knobs only and merged
+to main as bffb133b2ad931f3f442f63add3a9f7775002eff. Android CI #73 passed.
+Physical phone verification showed an ordinary completed SUCCESS result fully
+visible in the normal viewport without scrolling, including bottom navigation.
+The taller CRITICAL FAILURE / NATURAL 1 result was also physically exercised
+and fit fully in the whole phone viewport without scrolling.
 
-This candidate fix is physically verified on the tested phone but is not yet
-merged to main.
+The unnecessary-scroll issue is therefore resolved on the tested phone.
 
 
 ============================================================
@@ -465,10 +464,23 @@ CURRENT RELEASE TRUTH:
 - GitHub Actions produces downloadable debug APK artifacts
 - APKs have been installed on physical Android hardware
 - FateCaster is in active use on phone and tablet hardware
+- release-format Android App Bundle packaging is now proven
+- Android CI #79 passed :app:testDebugUnitTest, :app:assembleDebug, and :app:bundleRelease
+- CI produced the artifact FateCaster-release-aab-unsigned
+- the release AAB artifact was downloaded and independently inspected as a real Android App Bundle
+- signing verification reported `jar is unsigned`, matching the intended unsigned-packaging proof
+- the current release AAB is NOT yet Play-upload-ready because no upload-key signing arrangement exists
 - no production release signing workflow exists yet
-- no release Android App Bundle has been produced for Play yet
+- no upload keystore has been established for FateCaster yet
 - no Play Console testing track has been configured
 - no Play Store release has occurred
+
+NEXT RELEASE ACTION:
+1. Deliberately create FateCaster's upload keystore outside the public repository.
+2. Back up the keystore securely before depending on it.
+3. Configure CI signing through protected secrets without committing private key material or passwords.
+4. Produce and verify a signed Play-uploadable AAB.
+5. Then proceed into Play Console testing setup.
 
 
 ============================================================
@@ -704,20 +716,30 @@ REFERENCE IMPLEMENTATION PASS — CAVECODE INSIDE — COMPLETE / MERGED / PHYSIC
 - Clear History Cancel/Clear/empty-state flow re-verified
 - NATURAL 20 and NATURAL 1 history display re-verified
 
-PHONE LAYOUT POLISH — COMPLETE ON PR #8 CANDIDATE / PHYSICALLY VERIFIED / MERGE PENDING
+PHONE LAYOUT POLISH — COMPLETE / MERGED / PHYSICALLY VERIFIED
 - compacted CAST presentation through CastScreen.kt BLOCK 2 tuning knobs only
 - RollResolver and settled roll mechanics unchanged
+- PR #8 merged to main as bffb133b2ad931f3f442f63add3a9f7775002eff
 - Android CI #73 passed tests and debug APK build
 - ordinary SUCCESS result physically fits the normal phone viewport without scrolling
 - taller CRITICAL FAILURE / NATURAL 1 result physically fits the whole phone viewport without scrolling
 - bottom navigation remains visible in the verified completed-result layouts
-- PR #8 still requires review and merge before this work is part of main
 
-MILESTONE 5 — RELEASE PREPARATION — AFTER PHONE LAYOUT POLISH MERGES
-Expected work includes:
-- establish stable signing strategy
-- create secure release signing arrangement
-- produce release Android App Bundle
+MILESTONE 5 — RELEASE PREPARATION — IN PROGRESS
+COMPLETED SO FAR:
+- release build type exists
+- application ID, versionCode, versionName, minSdk, and targetSdk are established
+- CI release Android App Bundle packaging is implemented
+- Android CI #79 passed tests, debug APK assembly, and release AAB assembly
+- FateCaster-release-aab-unsigned artifact was produced
+- downloaded app-release.aab was independently inspected as a real Android App Bundle
+- signing verification confirmed the bundle is unsigned, as intended for this proof stage
+
+NEXT RELEASE WORK:
+- establish FateCaster upload-keystore strategy
+- create and securely back up the upload keystore outside the public repository
+- wire CI signing through protected secrets without exposing private material
+- produce and verify a signed Play-uploadable AAB
 - confirm versioning procedure
 - prepare Play Console testing path
 - prepare store listing / data-safety material
