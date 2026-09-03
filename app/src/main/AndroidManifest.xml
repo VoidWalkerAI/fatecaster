@@ -3,7 +3,9 @@
 
     <application
         android:allowBackup="false"
+        android:icon="@drawable/fatecaster_launcher_icon"
         android:label="FateCaster"
+        android:roundIcon="@drawable/fatecaster_launcher_icon"
         android:supportsRtl="true">
 
         <activity
