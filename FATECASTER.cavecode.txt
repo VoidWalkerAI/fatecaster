@@ -888,3 +888,10 @@ DO NOT:
 ============================================================
 END OF CURRENT TRUTH
 ============================================================
+
+BUILD MAINTENANCE PREPARATION — 2026-10-20
+BUILD-STAB-20261020: owner authorized preparation of Ubuntu 24.04 runner pins.
+Record: docs/maintenance/BUILD-STABILIZATION-2026-10-20.md
+Prepared against main at e4f7a341b9d4f364c13c2f60d54e8ee35ca2381f.
+This maintenance branch is pending review/merge; no release, deployment, or field
+acceptance is implied. Existing product states and work orders remain authoritative.
