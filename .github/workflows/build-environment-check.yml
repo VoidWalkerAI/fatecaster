@@ -1,0 +1,192 @@
+name: Build environment security check
+on:
+  push:
+    branches: ["codex/build-environment-check-20261109"]
+    paths: [".github/workflows/build-environment-check.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  java:
+    name: Java ${{ matrix.source }} on ${{ matrix.runner }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [rangewater-v4, fatecaster-v5]
+        runner: [ubuntu-latest, ubuntu-24.04]
+    steps:
+      - name: Match RangeWater Java setup
+        if: matrix.source == 'rangewater-v4'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Match FateCaster Java setup
+        if: matrix.source == 'fatecaster-v5'
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Create TLS verification source
+        shell: bash
+        run: |
+          cat > "$RUNNER_TEMP/CheckBuildTls.java" <<'JAVA'
+          import java.nio.file.*;
+          import java.security.*;
+          import java.security.cert.*;
+          import java.util.*;
+          import javax.net.ssl.*;
+          public class CheckBuildTls {
+            static boolean pathFailure(Throwable t) {
+              for (; t != null; t = t.getCause())
+                if (t instanceof CertPathValidatorException || t.getClass().getSimpleName().equals("SunCertPathBuilderException")) return true;
+              return false;
+            }
+            static void connect(String host) throws Exception {
+              try (var s = (SSLSocket) SSLSocketFactory.getDefault().createSocket()) {
+                s.connect(new java.net.InetSocketAddress(host, 443), 7000);
+                s.setSoTimeout(7000);
+                var p = s.getSSLParameters(); p.setEndpointIdentificationAlgorithm("HTTPS"); s.setSSLParameters(p);
+                s.startHandshake();
+              }
+            }
+            public static void main(String[] args) throws Exception {
+              System.out.println("JAVA_RUNTIME=" + System.getProperty("java.runtime.version"));
+              System.out.println("JAVA_VENDOR=" + System.getProperty("java.vendor"));
+              System.out.println("JAVA_HOME=" + System.getProperty("java.home"));
+              var storePath = Path.of(System.getProperty("java.home"), "lib", "security", "cacerts");
+              System.out.println("CACERTS_SHA256=" + HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(storePath))));
+              var ks = KeyStore.getInstance(storePath.toFile(), "changeit".toCharArray());
+              int failures = 0;
+              for (var aliases = ks.aliases(); aliases.hasMoreElements();) {
+                var alias = aliases.nextElement();
+                if (ks.getCertificate(alias) instanceof X509Certificate cert) {
+                  var dn = cert.getSubjectX500Principal().getName();
+                  if (dn.contains("CN=emSign ECC Root CA - G3") || dn.contains("CN=AAA Certificate Services")) {
+                    System.out.println("UNSAFE_ROOT=" + dn); failures++;
+                  }
+                }
+              }
+              try { connect("repo.maven.apache.org"); System.out.println("CONTROL_HTTPS=PASS"); }
+              catch (Exception e) { System.out.println("CONTROL_HTTPS=INCONCLUSIVE " + e); failures++; }
+              for (var prefix : List.of("dv-g3b", "dv-g3c", "ov-g3b", "ov-g3c", "ev-g3b", "ev-g3c")) {
+                var host = prefix + "-emudhra.we-have-a-problem.com";
+                try { connect(host); System.out.println("UNSAFE_ACCEPT=" + host); failures++; }
+                catch (Exception e) {
+                  if (pathFailure(e)) System.out.println("REJECTED_UNTRUSTED=" + host);
+                  else { System.out.println("INCONCLUSIVE=" + host + " " + e); failures++; }
+                }
+              }
+              System.out.println("NOTE=TLS checks do not independently validate signed-code intermediates.");
+              if (failures > 0) throw new IllegalStateException("Failed or inconclusive checks: " + failures);
+            }
+          }
+          JAVA
+      - name: Check configured Java selection
+        id: baseline
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          "$JAVA_HOME/bin/java" "$RUNNER_TEMP/CheckBuildTls.java" 2>&1 | tee "$RUNNER_TEMP/java-baseline.txt"
+      - name: Select vendor-fixed Java for comparison
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17.0.21+9"
+          check-latest: true
+      - name: Check vendor-fixed Java
+        id: patched
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          "$JAVA_HOME/bin/java" "$RUNNER_TEMP/CheckBuildTls.java" 2>&1 | tee "$RUNNER_TEMP/java-fixed.txt"
+      - name: Publish diagnostic report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-${{ matrix.source }}-${{ matrix.runner }}
+          path: |
+            ${{ runner.temp }}/java-baseline.txt
+            ${{ runner.temp }}/java-fixed.txt
+      - name: Summarize outcomes
+        if: always()
+        env:
+          BASELINE: ${{ steps.baseline.outcome }}
+          FIXED: ${{ steps.patched.outcome }}
+        run: |
+          {
+            echo "Configured Java: $BASELINE"
+            echo "Explicit fixed Java: $FIXED"
+            echo "A network failure is inconclusive, never a security pass."
+          } >> "$GITHUB_STEP_SUMMARY"
+          test "$BASELINE" = success
+          test "$FIXED" = success
+  worker-tooling:
+    name: Worker tooling - ${{ matrix.project }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: rangewater
+            repository: voidwalker-sagewire/rangewater-android
+            directory: imagery-gateway
+          - project: void-echo
+            repository: VoidWalkerAI/void-echo-worker
+            directory: .
+          - project: broken-frontier
+            repository: VoidWalkerAI/brokenfrontier-worker
+            directory: .
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.repository }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          check-latest: true
+      - name: Inspect baseline and candidate without deployment
+        working-directory: ${{ matrix.directory }}
+        shell: bash
+        env:
+          CI: "true"
+          WRANGLER_SEND_METRICS: "false"
+        run: |
+          set -euo pipefail
+          report="$RUNNER_TEMP/tooling-report"
+          mkdir -p "$report"
+          node --version | tee "$report/node-version.txt"
+          npm --version | tee "$report/npm-version.txt"
+          git rev-parse HEAD | tee "$report/source-sha.txt"
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          npm ls wrangler miniflare --json > "$report/baseline-versions.json"
+          set +e
+          npm audit --json > "$report/baseline-audit.json"
+          audit_exit=$?
+          set -e
+          if [ "$audit_exit" -gt 1 ]; then exit "$audit_exit"; fi
+          npx --no-install wrangler deploy --dry-run --outdir "$RUNNER_TEMP/baseline-bundle" 2>&1 | tee "$report/baseline-dry-run.txt"
+          npm install --save-dev --save-exact wrangler@4.158.0
+          npm ls wrangler miniflare --json > "$report/candidate-versions.json"
+          set +e
+          npm audit --json > "$report/candidate-audit.json"
+          audit_exit=$?
+          set -e
+          if [ "$audit_exit" -gt 1 ]; then exit "$audit_exit"; fi
+          npm run test --if-present 2>&1 | tee "$report/candidate-tests.txt"
+          npx --no-install wrangler deploy --dry-run --outdir "$RUNNER_TEMP/candidate-bundle" 2>&1 | tee "$report/candidate-dry-run.txt"
+          cp package.json package-lock.json "$report/"
+          git diff -- package.json package-lock.json > "$report/candidate.diff"
+          echo "No Cloudflare credentials supplied; dry-run only." >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload tooling evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: worker-tooling-${{ matrix.project }}
+          path: ${{ runner.temp }}/tooling-report/
