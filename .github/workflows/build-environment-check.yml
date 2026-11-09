@@ -136,12 +136,6 @@ jobs:
           - project: rangewater
             repository: voidwalker-sagewire/rangewater-android
             directory: imagery-gateway
-          - project: void-echo
-            repository: VoidWalkerAI/void-echo-worker
-            directory: .
-          - project: broken-frontier
-            repository: VoidWalkerAI/brokenfrontier-worker
-            directory: .
     steps:
       - uses: actions/checkout@v4
         with:
