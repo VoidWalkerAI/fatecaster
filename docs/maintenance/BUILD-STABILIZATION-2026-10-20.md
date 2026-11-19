@@ -33,3 +33,13 @@ Deployment, release-signing, and automatic version-bump workflows are not manual
 Review this maintenance-only diff and available CI results before merging into `main`. Prepare a separate Ubuntu 26.04 compatibility test when migration is desired; do not remove this pin merely because the label migration completes. Existing product work orders and release/field acceptance states retain their authority.
 
 Source: https://github.blog/changelog/2026-09-17-ubuntu-26-generally-available-and-latest-migration/
+
+
+## Refresh — November 18, 2026
+
+- Refreshed the existing PR #14 against current main `1e306f5ce1c5c767746efcb97f288a536e83de4a`.
+- Preserved the merged Gradle 8.14.7 security update.
+- Application source and product versions are unchanged.
+- Android CI builds the debug APK and unsigned release AAB. The manual release-signing workflow is runner-pinned and structurally checked; it is not dispatched by this refresh.
+- Exact verification status and run links are maintained in [PR #14](https://github.com/VoidWalkerAI/fatecaster/pull/14); review readiness requires successful CI on the refreshed head.
+- No Google Play publication, installation, production deployment, or physical-device acceptance is included.
